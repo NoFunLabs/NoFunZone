@@ -1,6 +1,6 @@
 {
   "name": "alchm",
-  "homepage": "https://evangottschalk.github.io/alchm/",
+  "homepage": "https://alchm.xyz",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
