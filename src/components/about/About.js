@@ -64,7 +64,7 @@ const About = () => {
             rightful owner - you.
           </div>
           <div className='aboutText'>
-            Alchm is unlike any other NFT on Earth. Just like people, no two Alchm NFTs are the same, and there
+            Alchm is unlike any other NFT collection on Earth. Just like people, no two Alchm NFTs are the same, and there
             is no limit on how many can exist. Your Alchm NFT has no random features, and is completely customized and 
             unique to you. By minting, you gain permanent access to limitless information about your astrology and
             identity through our sites and apps.

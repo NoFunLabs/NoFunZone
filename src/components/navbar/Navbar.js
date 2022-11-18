@@ -17,9 +17,13 @@ const { ethers } = require("ethers");
 
 let address, signer, provider;
 
+//E~ Added for creating OpenSea link
+let contractAddress = '0x0DEA502Dc83ab3A14D1BA8A23950BA6Ad8263466';
+
 const Navbar = () => {
 
 const [isConnected, toggleConnected] = useState(0);
+const [isMinted, toggleMinted] = useState(0);
 
 const jsonAbi = `[
   {
@@ -451,9 +455,16 @@ function handleButtonClick() {
 }
 
 async function mintNFT() {
-  const nftContract = new ethers.Contract('0x32A15236399cE84f1853470b6bbDfe5aA462c6e4',iface,signer);
-  const nftdata = await nftContract.mintNFT(address,'https://gateway.pinata.cloud/ipfs/QmeCzVAwKBbyghbVEKqVHuAhhSYCUeVGB6amjrYQ3Yu3gE');
+  const nftContract = new ethers.Contract(contractAddress, iface,signer);
+  const nftdata = await nftContract.mintNFT(address,'https://gateway.pinata.cloud/ipfs/QmeDnUfLX7WKufRgc2b6GMb9uVRV5DEFwd9Lpr1QwjLfPc');
+  toggleMinted ( !isMinted );
   console.log(nftdata);
+  const tokenID = await nftContract.balanceOf(address);
+  const tokenIDnumber = tokenID.toNumber();
+  document.getElementById('openSeaLink').style.visibility = 'visible';
+  //document.getElementById('openSeaLink').style.marginBottom = '-60px';
+  document.getElementById('openSeaLink').href = 'https://testnets.opensea.io/assets/goerli/' + contractAddress + '/' + tokenIDnumber.toString();
+  console.log(tokenIDnumber);
 }
 
 async function connectWallet() {
@@ -571,7 +582,14 @@ async function connectWallet() {
               <span className='textHighlight'>Alchm</span>
             </div>
             <div className='navbarBoxSubTitle'>Astrology NFTs unique to you.<br></br>Own your Alchemy.</div>
-            <div id="nftButton" className='navbarBoxButton' onClick={handleButtonClick}>{(isConnected) ? 'MINT NOW' : 'CONNECT WALLET'}</div>
+            <div id="nftButton" className='navbarBoxButton' onClick={handleButtonClick}>{(isMinted) ? 'MINT SUCCESS!' : 'MINT NOW'}</div>
+            <a className='openSeaLink'
+              id='openSeaLink'
+              href='#'
+              target="_blank"
+              rel="noreferrer">
+              {(isMinted) ? 'View on OpenSea ->' : ''}
+            </a>
           </div>
         </div>
         {/*<div className='navbarRight'>

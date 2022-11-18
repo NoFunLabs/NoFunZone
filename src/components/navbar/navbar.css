@@ -79,6 +79,21 @@
   cursor: pointer;
 }
 
+.openSeaLink {
+  visibility: hidden;
+  text-decoration: none;
+  margin-top: 15px;
+  margin-bottom: -40px;
+  color: var(--color-main);
+  font-size: 18px;
+  background-color: var(--color-black);
+  border: solid;
+  border-radius: 20px;
+  border-color: var(--color-main);
+  border-width: 3px;
+  padding: 8px 35px 13px 35px;
+}
+
 .navbarBoxButton {
   width: 100%;
   background-color: var(--color-main);
@@ -241,9 +256,12 @@
 }
 
 @media only screen and (max-width: 870px) {
-  .navbarCenterBottom {
-    display: none;
+  .navbar {
+    margin: 0px 0px 0px 0px;
   }
+  /*.navbarCenterBottom {
+    display: none;
+  }*/
   .navbarBoxTitle {
     font-size: 28px;
   }

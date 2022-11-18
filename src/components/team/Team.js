@@ -28,7 +28,7 @@ const Team = () => {
                 href='https://www.linkedin.com/in/evan-gottschalk/'
                 target="_blank"
                 rel="noreferrer">
-                  Evan Gottschalk
+                  Evan Gottschalk ♈︎
               </a>
               <div className='teamItemPosition'>Cofounder, Lead Developer</div>
             </div>
@@ -46,7 +46,7 @@ const Team = () => {
                 href='https://www.linkedin.com/in/gregory-castro-47437767/'
                 target="_blank"
                 rel="noreferrer">
-                  Greg Castro
+                  Greg Castro ♋︎
               </a>
               <div className='teamItemPosition'>Cofounder, Lead Alchemist</div>
             </div>
