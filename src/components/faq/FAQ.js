@@ -14,71 +14,74 @@ const FAQ = () => {
     <div className='componentFirst faqScroll'>
       <div className='componentSecond'>
         <div className='faq'>
-          <div className='roadmapTitle textHighlight'>FAQ</div>
-          <div className='roadmapSubTitle'>a collection of 5,000 unique NFTs</div>
+          <div className='faqTitle textHighlight'>FAQ</div>
+          <div className='roadmapSubTitle'></div>
           <div className='faqContainer'>
             <div className='faqItem' onClick={() => setOne(!one)}>
               <div className='faqItemLeft'>
-                <div className='faqItemTitle'>What is Binaryville?</div>
+                <div className='faqItemTitle'>What is Alchm?</div>
               </div>
               <div className='faqItemRight'>{one ? <MinusSVG /> : <PlusSVG />}</div>
             </div>
             {one && (
               <div className='faqItemAnswer'>
                 <div className='faqItemAnswerText'>
-                  Repulsive questions contented him few extensive supported. Of remarkably thoroughly he appearance
-                  in. Supposing tolerably applauded or of be. Suffering unfeeling so objection agreeable allowance
-                  me of. Ask within entire season sex common far who family. As be valley warmth assure on. Park
-                  girl they rich hour new well way you. Face ye be me been room we sons fond.
+                  Alchm is a cutting-edge NFT campaign with a model unlike any other. Rather than relying on
+                  random algorithms to generate outfits and expressions, Alchm uses generative machine learning
+                  AI to create custom avatars specific to you and unique to your personal astrology. By holding
+                  an Alchm NFT, you gain access to an ever-increasing array of premium tools for better understanding
+                  the way the universe affects your present, future and past. Know your Alchemy.
                 </div>
               </div>
             )}
             <div className='faqItem' onClick={() => setTwo(!two)}>
               <div className='faqItemLeft'>
-                <div className='faqItemTitle'>Where do I buy the NFTs?</div>
+                <div className='faqItemTitle'>How do I mint my custom NFT?</div>
               </div>
               <div className='faqItemRight'>{two ? <MinusSVG /> : <PlusSVG />}</div>
             </div>
             {two && (
               <div className='faqItemAnswer'>
                 <div className='faqItemAnswerText'>
-                  Repulsive questions contented him few extensive supported. Of remarkably thoroughly he appearance
-                  in. Supposing tolerably applauded or of be. Suffering unfeeling so objection agreeable allowance
-                  me of. Ask within entire season sex common far who family. As be valley warmth assure on. Park
-                  girl they rich hour new well way you. Face ye be me been room we sons fond.
+                  Simply scroll to the top of this page (alchm.xyz) and fill in your birthday, birth time and
+                  birth city and state. While only the birthday is mandatory, adding more information increases
+                  the accuracy of the generative AI. Then, connect your web wallet (such as MetaMask),
+                  and click "Mint". Own your Alchemy.
                 </div>
               </div>
             )}
             <div className='faqItem' onClick={() => setThree(!three)}>
               <div className='faqItemLeft'>
-                <div className='faqItemTitle'>When will the game be ready?</div>
+                <div className='faqItemTitle'>How are Alchm Avatars generated?</div>
               </div>
               <div className='faqItemRight'>{three ? <MinusSVG /> : <PlusSVG />}</div>
             </div>
             {three && (
               <div className='faqItemAnswer'>
                 <div className='faqItemAnswerText'>
-                  Repulsive questions contented him few extensive supported. Of remarkably thoroughly he appearance
-                  in. Supposing tolerably applauded or of be. Suffering unfeeling so objection agreeable allowance
-                  me of. Ask within entire season sex common far who family. As be valley warmth assure on. Park
-                  girl they rich hour new well way you. Face ye be me been room we sons fond.
+                  By entering your birth time and birth location, the positions and angles of the planets and stars
+                  relative to you at the exact moment of your birth can be calculated using basic astrophysics. Then,
+                  that information is used to determine your unique elemental dignities, tarot card affinities,
+                  decan-specific effects, and spirit, matter, essence and substance effect multipliers. Finally,
+                  these values are fed to our generative machine learning AI, which weighs all of this information
+                  to create your Alchm Avatar. Be your Alchemy.
                 </div>
               </div>
             )}
 
             <div className='faqItem' onClick={() => setFour(!four)}>
               <div className='faqItemLeft'>
-                <div className='faqItemTitle'>What do I get?</div>
+                <div className='faqItemTitle'>What do I unlock with my Alchm NFT?</div>
               </div>
               <div className='faqItemRight'>{four ? <MinusSVG /> : <PlusSVG />}</div>
             </div>
             {four && (
               <div className='faqItemAnswer'>
                 <div className='faqItemAnswerText'>
-                  Repulsive questions contented him few extensive supported. Of remarkably thoroughly he appearance
-                  in. Supposing tolerably applauded or of be. Suffering unfeeling so objection agreeable allowance
-                  me of. Ask within entire season sex common far who family. As be valley warmth assure on. Park
-                  girl they rich hour new well way you. Face ye be me been room we sons fond.
+                  By minting your personal Alchm Avatar NFT, you gain access to all of the alchemical information
+                  calculated by our alchemy analysis algorithm ("The Alchmizer"). On top of that, you can visit our
+                  site every day to see even more information about how your specific alchemy is modified by that
+                  day's arrangement of the planets, stars, constellations, and Moon phase. Advance your Alchemy.
                 </div>
               </div>
             )}

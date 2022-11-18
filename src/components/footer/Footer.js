@@ -23,28 +23,29 @@ const Footer = () => {
     <div className='footerBC componentFirst'>
       <div className='footerMain componentSecond'>
         <div className='roadmap'>
-          <div className='footerIcon'>
+          <div className='openseaIcon'>
             <OpenSeaSVG />
           </div>
           <div className='footerIconText'>Open sea</div>
-          <div className='footerName'>Binaryville</div>
-          <div className='footerName'>About Binaryville</div>
+          {/*<div className='footerName'>Binaryville</div>
+          <div className='footerName'>About Binaryville</div>*/}
 
-          <div className='footerJoin'>Join us</div>
+          
           <div className='footerContainer'>
             <div className='footerLink' onClick={handleDiscord}>
               <DiscordSVG className='footerIcon' />
-              <div className='footerLinkText'>Discord</div>
+              <div className='footerLinkText'></div>
             </div>
             <div className='footerLink' onClick={handleTwitter}>
               <TwitterSVG className='footerIcon' />
-              <div className='footerLinkText'>Twitter</div>
+              <div className='footerLinkText'></div>
             </div>
             <div className='footerLink' onClick={handleInstagram}>
               <InstagramVG className='footerIcon' />
-              <div className='footerLinkText'>Instagram</div>
+              <div className='footerLinkText'></div>
             </div>
           </div>
+          <div className='footerJoin'>Join us</div>
           <div className='footerBox' />
         </div>
       </div>

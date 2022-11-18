@@ -8,14 +8,14 @@ import './team.css'
 
 const Team = () => {
   return (
-    <div className='componentFirst teamBackGround'>
+    <div className='componentFirst'>
       <div className='componentSecond'>
-        <div className='roadmap'>
-          <div className='roadmapTitle textHighlight'>THE TEAM</div>
-          <div className='roadmapSubTitle'>virtually human</div>
+        <div className='team'>
+          <div className='teamTitle textHighlight'>THE TEAM</div>
+          <div className='teamSubTitle'>virtually human</div>
           <div className='teamContainer'>
             <div className='teamItem'>
-              <div className='teamItemImage1'>
+              <div className='teamItemImage'>
                 <img src={team1} alt='' style={{ width: '100%' }} />
               </div>
               <a className='teamItemTitle' 
@@ -33,8 +33,8 @@ const Team = () => {
               <div className='teamItemPosition'>Cofounder, Lead Developer</div>
             </div>
             <div className='teamItem'>
-              <div className='teamItemImage2'>
-                <img src={team2} alt='' style={{ width: '94%' }} />
+              <div className='teamItemImage'>
+                <img src={team2} alt='' style={{ width: '100%' }} />
               </div>
               <a className='teamItemTitle'
                 href='https://twitter.com/RedCashflow'
@@ -51,8 +51,8 @@ const Team = () => {
               <div className='teamItemPosition'>Cofounder, Lead Alchemist</div>
             </div>
             <div className='teamItem'>
-              <div className='teamItemImage3'>
-                <img src={team3} alt='' style={{ width: '90%' }} />
+              <div className='teamItemImage'>
+                <img src={team3} alt='' style={{ width: '100%' }} />
               </div>
               <a className='teamItemTitle'
                 href='https://twitter.com/Suzie_NFT'
@@ -66,7 +66,7 @@ const Team = () => {
                 rel="noreferrer">
                   Suzie Silver
               </a>
-              <div className='teamItemPosition'>Lead Whore</div>
+              <div className='teamItemPosition'>Cat, Lead Whore</div>
             </div>
           </div>
         </div>

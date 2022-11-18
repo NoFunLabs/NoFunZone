@@ -2,7 +2,9 @@ import React, { useState } from 'react'
 
 //import { ReactComponent as MobileMenu } from '../../icons/MobileMenu.svg'
 //import { ReactComponent as Close } from '../../icons/Close.svg'
-import { ReactComponent as Logo } from '../../icons/Logo.svg'
+//import { ReactComponent as Logo } from '../../icons/AlchmLogo.svg'
+
+import logo from '../../image/logo.png'
 
 import header1 from '../../image/header1.png'
 import header2 from '../../image/header2.png'
@@ -440,7 +442,7 @@ function setAddress(ethaddy) {
     address = ethaddy;
     if (address != null) {  toggleConnected ( !isConnected ); }
     console.log("Account:", address);
-    alert("Connected: " + address);
+    //alert("Connected: " + address);
 }
 
 function handleButtonClick() {
@@ -526,14 +528,10 @@ async function connectWallet() {
           </div>
         </div>
       </div>*/}
-
       <div className='navbarContainer SlideRightAnimation'>
         <div className='navbarLeft'></div>
         <div className='navbarCenter'>
-          <div className='navbarCenterTop'>
-            <Logo />
-          </div>
-          <div className='navbarCenterBottom'>
+        <div className='navbarCenterBottom'>
             <div className='navbarCenterItem' onClick={handleMint}>
               Mint
             </div>
@@ -550,20 +548,23 @@ async function connectWallet() {
               FAQ
             </div>
           </div>
+          <div className='navbarCenterTop'>
+            <img src={logo} alt='' className='navbarBoxImage' />
+          </div>
         </div>
         <div className='navbarRight'>
           <div className='navbarBox'>
             <div className='navbarBoxTitle'>
             </div>
-            <div id="nftButton" className='navbarBoxButton' onClick={handleButtonClick}>{(isConnected) ? 'WALLET CONNECTED' : 'CONNECT WALLET'}</div>
+            <div id="nftButton" className='navbarWalletButton' onClick={handleButtonClick}>{(isConnected) ? 'WALLET CONNECTED' : 'CONNECT WALLET'}</div>
         </div>
         </div>
       </div>
 
       <div className='navbarContainer SlideRightAnimation'>
-        <div className='navbarLeft'>
+        {/*<div className='navbarLeft'>
           <img src={header1} alt='' className='navbarBoxImage' />
-        </div>
+        </div>*/}
         <div className='navbarCenter'>
           <div className='navbarBox'>
             <div className='navbarBoxTitle'>
@@ -573,9 +574,9 @@ async function connectWallet() {
             <div id="nftButton" className='navbarBoxButton' onClick={handleButtonClick}>{(isConnected) ? 'MINT NOW' : 'CONNECT WALLET'}</div>
           </div>
         </div>
-        <div className='navbarRight'>
+        {/*<div className='navbarRight'>
           <img src={header2} alt='' className='navbarBoxImage' />
-        </div>
+        </div>*/}
       </div>
     </div>
   )

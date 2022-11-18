@@ -1,3 +1,28 @@
+.teamTitle {
+  font-weight: 400;
+  font-size: 60px;
+  border-radius: 25px 25px 0px 0px;
+  line-height: 100%;
+  text-align: center;
+  background-color: var(--color-black);
+  padding: 12px 70px 12px 70px;
+  margin: 0px 320px 0px 320px;
+}
+
+.teamSubTitle {
+  margin: 0px 320px -42px 320px;
+  padding: 0px 25px 23px 25px;
+  border-radius: 0px 0px 25px 25px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: var(--color-lightyellow);
+  background-color: var(--color-black);
+  
+}
+
 .teamBackGround {
   background-color: var(--color-navbar);
   padding: 80px 50px;
@@ -15,8 +40,8 @@
 
 .teamItem {
   width: 100%;
-  background-color: var(--color-white);
-  border-radius: 12px;
+  background-color: var(--color-black);
+  border-radius: 25px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -24,32 +49,22 @@
   padding-bottom: 60px;
 }
 
-.teamItemImage1 {
+.teamItemImage {
   padding: 50px 30px 20px;
-  justify-content: center;
-}
-
-.teamItemImage2 {
-  padding: 50px 30px 20px;
-  margin: 0px 0px 0px 20px;
-  justify-content: center;
-}
-
-.teamItemImage3 {
-  padding: 50px 30px 20px;
-  justify-content: center;
 }
 
 .teamItemTitle {
   color: var(--color-main);
-  text-decoration:none;
 }
 
 .teamItemName {
   margin: 20px 0;
+  color: var(--color-white);
+  text-decoration: none;
 }
 
 .teamItemPosition {
+  color: var(--color-lightyellow);
 }
 
 @media only screen and (max-width: 1100px) {

@@ -3,11 +3,13 @@
   --color-background: #ffffff;
   --color-navbar: #ebebeb;
 
-  --color-main: #ff583d;
+  --color-main: #f2ff61;
+  --color-lightyellow: #c9c9a0  ;
+  --color-black: #000000;
   --color-white: #ffffff;
   --color-box: red;
 
-  --color-text-main: #000000;
+  --color-text-main: #f2ff61;
 
   /*SIZE*/
   ---main-padding: 0px;
@@ -17,6 +19,9 @@
   ---border-radius-small: 0px;
 
   ---navbar-height: 100px;
+
+  /* E Additions*/
+  --color-navbarBoxSubtitle: #f2ff61;
 }
 
 @font-face {

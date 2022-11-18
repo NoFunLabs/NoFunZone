@@ -13,18 +13,18 @@ const Roadmap = () => {
       <div className='componentSecond'>
         <div className='roadmap'>
           <div className='roadmapTitle textHighlight'>ROADMAP</div>
-          <div className='roadmapSubTitle'>a collection of 5,000 unique NFTs</div>
+          {/*<div className='roadmapSubTitle'>a collection of 5,000 unique NFTs</div>*/}
 
           <div className='roadmapList'>
             <div className='roadmapItemLeft'>
               <div className='roadmapIcon'>
                 <Roadmap1SVG />
               </div>
-              <div className='roadmapText'>One of Binaryville Robot NFT mint collection unit</div>
+              <div className='roadmapText'>Release Alchm Avatars into the universe</div>
             </div>
 
             <div className='roadmapItemRight'>
-              <div className='roadmapText'>One of Binaryville Robot NFT mint collection unit</div>
+              <div className='roadmapText'>Expand alchemical perks for holders</div>
               <div className='roadmapIcon'>
                 <Roadmap2SVG />
               </div>
@@ -34,11 +34,11 @@ const Roadmap = () => {
               <div className='roadmapIcon'>
                 <Roadmap3SVG />
               </div>
-              <div className='roadmapText'>One of Binaryville Robot NFT mint collection unit</div>
+              <div className='roadmapText'>Build Planetarium Metaverse NFTs for deeper exploration by holders</div>
             </div>
 
             <div className='roadmapItemRight'>
-              <div className='roadmapText'>One of Binaryville Robot NFT mint collection unit</div>
+              <div className='roadmapText'>Create interactive Oracle Avatar NFTs that share greater wisdom with holders</div>
               <div className='roadmapIcon'>
                 <Roadmap4SVG />
               </div>

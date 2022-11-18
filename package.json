@@ -1,7 +1,7 @@
 {
   "name": "alchm",
-  "homepage": "https://alchm.xyz",
-  "private": true,
+  "homepage": "https://evangottschalk.github.io/alchm/",
+  "version": "0.2.0",
   "dependencies": {
     "@testing-library/jest-dom": "^5.14.1",
     "@testing-library/react": "^11.2.7",
