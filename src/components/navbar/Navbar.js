@@ -18,7 +18,8 @@ const { ethers } = require("ethers");
 let address, signer, provider;
 
 //E~ Added for creating OpenSea link
-let contractAddress = '0x0DEA502Dc83ab3A14D1BA8A23950BA6Ad8263466';
+let tokenID;
+let contractAddress = '0xA055CD98B0b4f09bb96ba43BE64963BdF11783e1';
 
 const Navbar = () => {
 
@@ -459,7 +460,7 @@ async function mintNFT() {
   const nftdata = await nftContract.mintNFT(address,'https://gateway.pinata.cloud/ipfs/QmeDnUfLX7WKufRgc2b6GMb9uVRV5DEFwd9Lpr1QwjLfPc');
   toggleMinted ( !isMinted );
   console.log(nftdata);
-  const tokenID = await nftContract.balanceOf(address);
+  tokenID = await nftContract.balanceOf(address);
   const tokenIDnumber = tokenID.toNumber();
   document.getElementById('openSeaLink').style.visibility = 'visible';
   //document.getElementById('openSeaLink').style.marginBottom = '-60px';
