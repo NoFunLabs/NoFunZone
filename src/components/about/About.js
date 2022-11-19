@@ -57,7 +57,7 @@ const About = () => {
             the influence of the spiraling galaxy we call home. Rigorous analysis of the positions, velocities,
             angles and arrangements of our cosmic influencers reveals truths about ourselves as deep as the universe.
           </div>
-          <div className='aboutText'>
+          <div className='aboutText aboutAnchor'>
             Alchm NFTs are these truths embodied as spiritual beings bearing the nature of our personal alchemy.
             By entering the time and place of your birth, every arrangement and motion of the stars is calculated
             relative to you, and your unique alchemical identity is algorithmically generated and given to its

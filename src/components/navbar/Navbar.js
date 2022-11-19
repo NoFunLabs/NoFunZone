@@ -17,9 +17,18 @@ const { ethers } = require("ethers");
 
 let address, signer, provider;
 
-//E~ Added for creating OpenSea link
-//let tokenID;
+//E~ Update these variables manually according to the smart contract address of your NFT collection,
+//   and the URI of the metadata to be minted as an NFT
 let contractAddress = '0xA055CD98B0b4f09bb96ba43BE64963BdF11783e1';
+let metadataURI = 'https://gateway.pinata.cloud/ipfs/QmeDnUfLX7WKufRgc2b6GMb9uVRV5DEFwd9Lpr1QwjLfPc';
+let network = 'Goerli';
+
+//E~ Added for creating OpenSea link
+var openSeaPrefixes = {
+  Mainnet: 'https://opensea.io/assets/ethereum/',
+  Goerli: 'https://testnets.opensea.io/assets/goerli/'
+}
+let openSeaPrefix = openSeaPrefixes[network];
 
 const Navbar = () => {
 
@@ -443,6 +452,12 @@ const jsonAbi = `[
 const iface = new Interface(jsonAbi);
 iface.format(FormatTypes.full);
 
+//E~
+function pause(time) {
+  return new Promise(resolve => setTimeout(resolve, time));
+}
+
+
 function setAddress(ethaddy) {
     address = ethaddy;
     if (address != null) {  toggleConnected ( !isConnected ); }
@@ -457,15 +472,33 @@ function handleButtonClick() {
 
 async function mintNFT() {
   const nftContract = new ethers.Contract(contractAddress, iface,signer);
-  const nftdata = await nftContract.mintNFT(address,'https://gateway.pinata.cloud/ipfs/QmeDnUfLX7WKufRgc2b6GMb9uVRV5DEFwd9Lpr1QwjLfPc');
+  const transactionInfo = await nftContract.mintNFT(address, metadataURI);
   toggleMinted ( !isMinted );
-  console.log(nftdata);
-  const tokenID = await nftContract.balanceOf(address);
-  const tokenIDnumber = tokenID.toNumber();
+  console.log("Transaction info: ", transactionInfo);
+  var transactionHash = transactionInfo.hash;
+  console.log("Transaction hash: ", transactionHash);
+  var transactionReceipt = await provider.getTransactionReceipt(transactionHash);
+  console.log("Immediate transaction receipt: ", transactionReceipt);
+  document.getElementById('mintButton').textContent = "MINTING"
+  var loop_count = 1;
+  while ( !transactionReceipt ) {
+    await pause(500);
+    if (loop_count > 3) {
+      document.getElementById('mintButton').textContent = "MINTING"
+      loop_count = 0;
+    } else {
+      document.getElementById('mintButton').insertAdjacentText('beforeEnd', '.');
+    }
+    transactionReceipt = await provider.getTransactionReceipt(transactionHash);
+    loop_count+=1;
+  }
+  document.getElementById('mintButton').textContent = "MINT SUCCESS!"
+  console.log("Mined transaction receipt: ", transactionReceipt);
+  const tokenID = parseInt(transactionReceipt.logs[0].topics[3], 16);
+  console.log("Token ID: ", tokenID);
   document.getElementById('openSeaLink').style.visibility = 'visible';
   //document.getElementById('openSeaLink').style.marginBottom = '-60px';
-  document.getElementById('openSeaLink').href = 'https://testnets.opensea.io/assets/goerli/' + contractAddress + '/' + tokenIDnumber.toString();
-  console.log(tokenIDnumber);
+  document.getElementById('openSeaLink').href = openSeaPrefix + contractAddress + '/' + tokenID.toString();
 }
 
 async function connectWallet() {
@@ -498,19 +531,23 @@ async function connectWallet() {
 
   const handleMint = () => {}
   const handleAbout = () => {
-    var scroll = document.getElementsByClassName('aboutBC')
-    window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop })
+    var scroll = document.getElementsByClassName('aboutAnchor')
+    console.log(scroll);
+    window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop + 80 })
   }
   const handleRoadmap = () => {
     var scroll = document.getElementsByClassName('roadmapBC')
-    window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop - 20 })
+    console.log(scroll);
+    window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop - 40 })
   }
   const handleTeam = () => {
-    var scroll = document.getElementsByClassName('teamBackGround')
-    window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop - 20 })
+    var scroll = document.getElementsByClassName('teamAnchor')
+    console.log(scroll);
+    window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop - 40 })
   }
   const handleFaq = () => {
     var scroll = document.getElementsByClassName('faqScroll')
+    console.log(scroll);
     window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop + 20 })
   }
 
@@ -560,7 +597,7 @@ async function connectWallet() {
               FAQ
             </div>
           </div>
-          <div className='navbarCenterTop'>
+          <div className='navbarLogo'>
             <img src={logo} alt='' className='navbarBoxImage' />
           </div>
         </div>
@@ -568,7 +605,7 @@ async function connectWallet() {
           <div className='navbarBox'>
             <div className='navbarBoxTitle'>
             </div>
-            <div id="nftButton" className='navbarWalletButton' onClick={handleButtonClick}>{(isConnected) ? 'WALLET CONNECTED' : 'CONNECT WALLET'}</div>
+            <div id="walletButton" className='navbarWalletButton' onClick={handleButtonClick}>{(isConnected) ? 'WALLET CONNECTED' : 'CONNECT WALLET'}</div>
         </div>
         </div>
       </div>
@@ -582,8 +619,8 @@ async function connectWallet() {
             <div className='navbarBoxTitle'>
               <span className='textHighlight'>Alchm</span>
             </div>
-            <div className='navbarBoxSubTitle'>Astrology NFTs unique to you.<br></br>Own your Alchemy.</div>
-            <div id="nftButton" className='navbarBoxButton' onClick={handleButtonClick}>{(isMinted) ? 'MINT SUCCESS!' : 'MINT NOW'}</div>
+            <div className='navbarBoxSubTitle'>Astrology NFTs unique to you.<br></br>Own Your Alchemy.</div>
+            <div id="mintButton" className='navbarBoxButton' onClick={handleButtonClick}>{(isConnected) ? 'MINT NOW' : 'CONNECT WALLET'}</div>
             <a className='openSeaLink'
               id='openSeaLink'
               href='#'

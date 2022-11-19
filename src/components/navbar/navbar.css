@@ -117,8 +117,8 @@
   height: auto;
 }
 
-.navbarCenterTop {
-  margin: -20px 0px 0px 0px;
+.navbarLogo {
+  margin: -35px 0px 0px 0px;
   z-index: 9999;
 }
 
@@ -147,7 +147,8 @@
   color: var(--color-text-main);
   font-weight: 400;
   font-size: 16px;
-  margin: 0 25px;
+  margin: 0px 35px 0px 0px;
+  padding: 0px 6px 20px 10px;
   white-space: nowrap;
   line-height: 24px;
   cursor: pointer;

@@ -8,7 +8,7 @@ import './team.css'
 
 const Team = () => {
   return (
-    <div className='componentFirst'>
+    <div className='componentFirst teamAnchor'>
       <div className='componentSecond'>
         <div className='team'>
           <div className='teamTitle textHighlight'>THE TEAM</div>
