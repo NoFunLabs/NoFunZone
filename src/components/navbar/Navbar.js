@@ -492,8 +492,20 @@ async function mintNFT() {
     transactionReceipt = await provider.getTransactionReceipt(transactionHash);
     loop_count+=1;
   }
-  document.getElementById('mintButton').textContent = "MINT SUCCESS!"
   console.log("Mined transaction receipt: ", transactionReceipt);
+  var wait_count = 1;
+  while ( wait_count < 5 ) {
+    await pause(500);
+    if (loop_count > 3) {
+      document.getElementById('mintButton').textContent = "MINTING"
+      loop_count = 0;
+    } else {
+      document.getElementById('mintButton').insertAdjacentText('beforeEnd', '.');
+    }
+    loop_count+=1;
+    wait_count+=1;
+  }
+  document.getElementById('mintButton').textContent = "MINT SUCCESS!"
   const tokenID = parseInt(transactionReceipt.logs[0].topics[3], 16);
   console.log("Token ID: ", tokenID);
   document.getElementById('openSeaLink').style.visibility = 'visible';
@@ -582,19 +594,29 @@ async function connectWallet() {
         <div className='navbarCenter'>
         <div className='navbarCenterBottom'>
             <div className='navbarCenterItem' onClick={handleMint}>
-              Mint
+              <div className='navbarButton1'>
+                Mint
+              </div>
             </div>
             <div className='navbarCenterItem' onClick={handleAbout}>
-              About Alchm
+              <div className='navbarButton2'>
+                About Alchm
+              </div>
             </div>
             <div className='navbarCenterItem' onClick={handleRoadmap}>
-              Roadmap
+              <div className='navbarButton3'>
+                Roadmap
+              </div>
             </div>
             <div className='navbarCenterItem' onClick={handleTeam}>
-              Team
+              <div className='navbarButton4'>
+                Team
+              </div>
             </div>
             <div className='navbarCenterItem' onClick={handleFaq}>
-              FAQ
+              <div className='navbarButton5'>
+                FAQ
+              </div>
             </div>
           </div>
           <div className='navbarLogo'>

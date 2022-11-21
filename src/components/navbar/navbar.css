@@ -82,16 +82,26 @@
 .openSeaLink {
   visibility: hidden;
   text-decoration: none;
-  margin-top: 15px;
+  margin-top: 20px;
   margin-bottom: -40px;
   color: var(--color-main);
   font-size: 18px;
+  text-align: center;
+  overflow: hidden;
   background-color: var(--color-black);
   border: solid;
-  border-radius: 20px;
-  border-color: var(--color-main);
-  border-width: 3px;
+  border-radius: 12px;
   padding: 8px 35px 13px 35px;
+  transition: height 0.5s; 
+  -webkit-transition: height 0.5s;
+  box-shadow:0 0 20px 10px #fdff6fba;
+}
+
+.openSeaLink:hover {
+  -webkit-transform: scale(1.02);
+  -moz-transform: scale(1.02);
+  -o-transform: scale(1.02);
+  transform: scale(1.02);
 }
 
 .navbarBoxButton {
@@ -118,7 +128,7 @@
 }
 
 .navbarLogo {
-  margin: -35px 0px 0px 0px;
+  margin: 0px 0px 0px 0px;
   z-index: 9999;
 }
 
@@ -147,11 +157,32 @@
   color: var(--color-text-main);
   font-weight: 400;
   font-size: 16px;
-  margin: 0px 35px 0px 0px;
-  padding: 0px 6px 20px 10px;
+  margin: 0px 35px -75px 0px;
   white-space: nowrap;
   line-height: 24px;
   cursor: pointer;
+}
+
+.navbarButton1 {
+  padding: 0px 6px 8px 20px;
+  margin-top: -51px;
+}
+
+.navbarButton2 {
+  padding: 0px 6px 78px 20px;
+}
+
+.navbarButton3 {
+  padding: 0px 6px 78px 20px;
+}
+
+.navbarButton4 {
+  padding: 0px 6px 78px 20px;
+}
+
+.navbarButton5 {
+  padding: 0px 6px 8px 20px;
+  margin-top: -51px;
 }
 
 .navbarBoxButton:active {
