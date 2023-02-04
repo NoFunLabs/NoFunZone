@@ -1244,9 +1244,9 @@ return (
         </div>
       </div>
     </div>
-    <div id="testContainer" className="testContainer" style={{width:"95%", color:"#ffffff", backgroundColor:"#000000", padding:"2.5%"}}>
+    <div id="testContainer" className="testContainer" style={{display: test_button_display, width:"95%", color:"#ffffff", backgroundColor:"#000000", padding:"2.5%"}}>
       <div id="testContainerTitle" className="testContainerTitle" style={{fontSize:50}}>TEST AREA</div>
-      <div className="submitButtons" id="submitButtons" style={{display: test_button_display}}>
+      <div className="submitButtons" id="submitButtons">
         <input value="Use Current Input" className="submitButton1" id="submitButton1" type="submit" style={{fontSize:18, marginRight:20}} onClick={handleSubmitClick}/>
         <input value="Use Evan's Info" className="submitButton2" id="submitButton2" type="submit" style={{fontSize:18, marginRight:20}} onClick={handleSubmitClick}/>
         <input value="Use Greg's Info" className="submitButton3" id="submitButton3" type="submit" style={{fontSize:18}} onClick={handleSubmitClick}/>
