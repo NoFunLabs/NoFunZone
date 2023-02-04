@@ -6,29 +6,25 @@ import React, { useState } from 'react'
 
 import logo from '../../image/logo.png'
 
-import header1 from '../../image/header1.png'
-import header2 from '../../image/header2.png'
+//import header1 from '../../image/header1.png'
+//import header2 from '../../image/header2.png'
 
 import { FormatTypes, Interface } from "@ethersproject/abi";
 
 import './navbar.css'
 
+
 const { ethers } = require("ethers");
 
 let address, signer, provider;
 
-//E~ Update these variables manually according to the smart contract address of your NFT collection,
-//   and the URI of the metadata to be minted as an NFT
-let contractAddress = '0xA055CD98B0b4f09bb96ba43BE64963BdF11783e1';
-let metadataURI = 'https://gateway.pinata.cloud/ipfs/QmeDnUfLX7WKufRgc2b6GMb9uVRV5DEFwd9Lpr1QwjLfPc';
 let network = 'Goerli';
 
-//E~ Added for creating OpenSea link
-var openSeaPrefixes = {
-  Mainnet: 'https://opensea.io/assets/ethereum/',
-  Goerli: 'https://testnets.opensea.io/assets/goerli/'
-}
-let openSeaPrefix = openSeaPrefixes[network];
+var mobile = false;
+if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
+  console.log("Mobile device detected");
+  mobile = true;
+};
 
 const Navbar = () => {
 
@@ -452,7 +448,7 @@ const jsonAbi = `[
 const iface = new Interface(jsonAbi);
 iface.format(FormatTypes.full);
 
-//E~
+
 function pause(time) {
   return new Promise(resolve => setTimeout(resolve, time));
 }
@@ -465,52 +461,8 @@ function setAddress(ethaddy) {
     //alert("Connected: " + address);
 }
 
-function handleButtonClick() {
+function handleConnectClick() {
   if (!isConnected) {connectWallet()}
-    else {mintNFT()}
-}
-
-async function mintNFT() {
-  const nftContract = new ethers.Contract(contractAddress, iface,signer);
-  const transactionInfo = await nftContract.mintNFT(address, metadataURI);
-  toggleMinted ( !isMinted );
-  console.log("Transaction info: ", transactionInfo);
-  var transactionHash = transactionInfo.hash;
-  console.log("Transaction hash: ", transactionHash);
-  var transactionReceipt = await provider.getTransactionReceipt(transactionHash);
-  console.log("Immediate transaction receipt: ", transactionReceipt);
-  document.getElementById('mintButton').textContent = "MINTING"
-  var loop_count = 1;
-  while ( !transactionReceipt ) {
-    await pause(500);
-    if (loop_count > 3) {
-      document.getElementById('mintButton').textContent = "MINTING"
-      loop_count = 0;
-    } else {
-      document.getElementById('mintButton').insertAdjacentText('beforeEnd', '.');
-    }
-    transactionReceipt = await provider.getTransactionReceipt(transactionHash);
-    loop_count+=1;
-  }
-  console.log("Mined transaction receipt: ", transactionReceipt);
-  var wait_count = 1;
-  while ( wait_count < 5 ) {
-    await pause(500);
-    if (loop_count > 3) {
-      document.getElementById('mintButton').textContent = "MINTING"
-      loop_count = 0;
-    } else {
-      document.getElementById('mintButton').insertAdjacentText('beforeEnd', '.');
-    }
-    loop_count+=1;
-    wait_count+=1;
-  }
-  document.getElementById('mintButton').textContent = "MINT SUCCESS!"
-  const tokenID = parseInt(transactionReceipt.logs[0].topics[3], 16);
-  console.log("Token ID: ", tokenID);
-  document.getElementById('openSeaLink').style.visibility = 'visible';
-  //document.getElementById('openSeaLink').style.marginBottom = '-60px';
-  document.getElementById('openSeaLink').href = openSeaPrefix + contractAddress + '/' + tokenID.toString();
 }
 
 async function connectWallet() {
@@ -518,146 +470,103 @@ async function connectWallet() {
   // Prompt user for account connections
   await provider.send("eth_requestAccounts", []);
   signer = provider.getSigner();
+  console.log(signer);
   setAddress( await signer.getAddress() );
   let balance = await signer.getBalance();
   console.log(await ethers.utils.formatEther(balance));
 }
 
 
-  //   const [Mobile, setMobile] = useState(false)
-  //   useEffect(() => {
-  //     WindowChange()
-  //   }, [])
+const handleMint = () => {}
+const handleAbout = () => {
+  var scroll = document.getElementsByClassName('aboutAnchor')
+  window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop + 80 })
+}
+const handleRoadmap = () => {
+  var scroll = document.getElementsByClassName('roadmapBC')
+  window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop - 40 })
+}
+const handleTeam = () => {
+  var scroll = document.getElementsByClassName('teamAnchor')
+  window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop - 40 })
+}
+const handleFaq = () => {
+  var scroll = document.getElementsByClassName('faqScroll')
+  window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop + 20 })
+}
 
-  //   //   const HandleMobileMenu = () => {
-  //   //     setMobile(!Mobile)
-  //   //   }
 
-  //   const WindowChange = () => {
-  //     if (window.innerWidth > 1050) {
-  //       setMobile(false)
-  //     }
-  //   }
-
-  //   window.addEventListener('resize', WindowChange)
-
-  const handleMint = () => {}
-  const handleAbout = () => {
-    var scroll = document.getElementsByClassName('aboutAnchor')
-    console.log(scroll);
-    window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop + 80 })
-  }
-  const handleRoadmap = () => {
-    var scroll = document.getElementsByClassName('roadmapBC')
-    console.log(scroll);
-    window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop - 40 })
-  }
-  const handleTeam = () => {
-    var scroll = document.getElementsByClassName('teamAnchor')
-    console.log(scroll);
-    window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop - 40 })
-  }
-  const handleFaq = () => {
-    var scroll = document.getElementsByClassName('faqScroll')
-    console.log(scroll);
-    window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop + 20 })
-  }
-
-  return (
-    <div className='navbar'>
-      {/* <div className='navbarMobile'>
-        <div className='navbarCenterIcon'>
-          <div className='navbarMobileTopRight '>MobileLeftTitle</div>
-        </div>
-      </div>
-      <div className='navbarMobileButton'>
-        <MobileMenu className={Mobile ? 'Mobile' : 'Mobile'} onClick={HandleMobileMenu} />
-        <div className={Mobile ? 'navbarMobileContainerActive' : 'navbarMobileContainer'}>
-          <div className={Mobile ? 'navbarMenu active' : 'navbarMenu'}>
-            <div className='navbarMenuContainer'>
-              <div className='navbarMobileTop'>
-                <div className='navbarMobileTopRight menuOpen'>MobileMenuText</div>
-                <div className='navbarMobileTopLeft'>
-                  <Close className='CloseIcon' onClick={HandleMobileMenu} />
-                </div>
-              </div>
-              <div className='navbarMobileMain'>
-                <div className='navbarCenterLink opacity7'>MobileMenuMiddleText</div>
-                <div className='navbarCenterLink navbarRightButton'>MobileMenuButton</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>*/}
-      <div className='navbarContainer SlideRightAnimation'>
-        <div className='navbarLeft'></div>
-        <div className='navbarCenter'>
-        <div className='navbarCenterBottom'>
-            <div className='navbarCenterItem' onClick={handleMint}>
-              <div className='navbarButton1'>
-                Mint
-              </div>
-            </div>
-            <div className='navbarCenterItem' onClick={handleAbout}>
-              <div className='navbarButton2'>
-                About Alchm
-              </div>
-            </div>
-            <div className='navbarCenterItem' onClick={handleRoadmap}>
-              <div className='navbarButton3'>
-                Roadmap
-              </div>
-            </div>
-            <div className='navbarCenterItem' onClick={handleTeam}>
-              <div className='navbarButton4'>
-                Team
-              </div>
-            </div>
-            <div className='navbarCenterItem' onClick={handleFaq}>
-              <div className='navbarButton5'>
-                FAQ
-              </div>
-            </div>
-          </div>
-          <div className='navbarLogo'>
-            <img src={logo} alt='' className='navbarBoxImage' />
-          </div>
-        </div>
-        <div className='navbarRight'>
-          <div className='navbarBox'>
-            <div className='navbarBoxTitle'>
-            </div>
-            <div id="walletButton" className='navbarWalletButton' onClick={handleButtonClick}>{(isConnected) ? 'WALLET CONNECTED' : 'CONNECT WALLET'}</div>
-        </div>
-        </div>
-      </div>
-
-      <div className='navbarContainer SlideRightAnimation'>
-        {/*<div className='navbarLeft'>
-          <img src={header1} alt='' className='navbarBoxImage' />
-        </div>*/}
-        <div className='navbarCenter'>
-          <div className='navbarBox'>
-            <div className='navbarBoxTitle'>
-              <span className='textHighlight'>Alchm</span>
-            </div>
-            <div className='navbarBoxSubTitle'>Astrology NFTs unique to you.<br></br>Own Your Alchemy.</div>
-            <div id="mintButton" className='navbarBoxButton' onClick={handleButtonClick}>{(isConnected) ? 'MINT NOW' : 'CONNECT WALLET'}</div>
-            <a className='openSeaLink'
-              id='openSeaLink'
-              href='#'
-              target="_blank"
-              rel="noreferrer">
-              {(isMinted) ? 'View on OpenSea ->' : ''}
-            </a>
-          </div>
-        </div>
-        {/*<div className='navbarRight'>
-          <img src={header2} alt='' className='navbarBoxImage' />
-        </div>*/}
+return (
+  <div className='navbar'>
+    {/* <div className='navbarMobile'>
+      <div className='navbarCenterIcon'>
+        <div className='navbarMobileTopRight '>MobileLeftTitle</div>
       </div>
     </div>
-  )
+    <div className='navbarMobileButton'>
+      <MobileMenu className={Mobile ? 'Mobile' : 'Mobile'} onClick={HandleMobileMenu} />
+      <div className={Mobile ? 'navbarMobileContainerActive' : 'navbarMobileContainer'}>
+        <div className={Mobile ? 'navbarMenu active' : 'navbarMenu'}>
+          <div className='navbarMenuContainer'>
+            <div className='navbarMobileTop'>
+              <div className='navbarMobileTopRight menuOpen'>MobileMenuText</div>
+              <div className='navbarMobileTopLeft'>
+                <Close className='CloseIcon' onClick={HandleMobileMenu} />
+              </div>
+            </div>
+            <div className='navbarMobileMain'>
+              <div className='navbarCenterLink opacity7'>MobileMenuMiddleText</div>
+              <div className='navbarCenterLink navbarRightButton'>MobileMenuButton</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>*/}
+    <div className='navbarContainer SlideRightAnimation'>
+      <div className='navbarLeft'></div>
+      <div className='navbarCenter'>
+      <div className='navbarCenterBottom'>
+          {/*<div className='navbarLogo'>
+            <img src={logo} alt='' className='navbarBoxImage' />
+          </div>*/}
+          <div className='navbarCenterItem' onClick={handleMint}>
+            <div className='navbarButton1'>
+              Mint
+            </div>
+          </div>
+          <div className='navbarCenterItem' onClick={handleAbout}>
+            <div className='navbarButton2'>
+              About Alchm
+            </div>
+          </div>
+          <div className='navbarCenterItem' onClick={handleRoadmap}>
+            <div className='navbarButton3'>
+              Roadmap
+            </div>
+          </div>
+          <div className='navbarCenterItem' onClick={handleTeam}>
+            <div className='navbarButton4'>
+              Team
+            </div>
+          </div>
+          <div className='navbarCenterItem' onClick={handleFaq}>
+            <div className='navbarButton5'>
+              FAQ
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className='navbarRight'>
+        <div className='navbarBox'>
+          <div className='navbarBoxTitle'>
+          </div>
+          <div id="walletButton" className='navbarWalletButton' onClick={handleConnectClick}>{(isConnected) ? 'WALLET CONNECTED' : 'CONNECT WALLET'}</div>
+      </div>
+      </div>
+    </div>
+  </div>
+)
 }
+
 
 export default Navbar

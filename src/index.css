@@ -4,7 +4,10 @@
   --color-navbar: #ebebeb;
 
   --color-main: #f2ff61;
-  --color-lightyellow: #c9c9a0  ;
+  --color-lightyellow: #c9c9a0;
+  --color-warningred: #ff6262;
+  --color-confirmationgreen: #00ff00;
+  --color-disabledgray: #bbbbbb;
   --color-black: #000000;
   --color-white: #ffffff;
   --color-box: red;

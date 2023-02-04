@@ -71,7 +71,7 @@ const About = () => {
           </div>
           <div className='aboutText'>
             Be brave. Be infinitely curious. Be unstoppable. Mint your Alchm Avatar to face yourself, and face your
-            destiny.Own your Alchemy.
+            destiny.
           </div>
           <div className='aboutText'>
             Own your Alchemy.

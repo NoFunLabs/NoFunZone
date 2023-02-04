@@ -1,5 +1,5 @@
 .navbar {
-  background-color: var(--color-navbar);
+  background-color: #000000;
   display: flex;
   justify-content: center;
   padding: 0px 0px 0px 0px;
@@ -26,7 +26,7 @@
 }
 
 .navbarCenter {
-  margin: -180px 0px 0px 0px;
+  margin: -185px 0px 0px 0px;
   flex: 50%;
   display: flex;
   align-items: center;
@@ -69,7 +69,7 @@
   align-items: center;
   justify-content: center;
   padding: 25px;
-  margin: -620px 0px 0px 0px;
+  margin: -630px 0px 0px 0px;
   border-radius: 12px;
   color: var(--color-black);
   font-weight: 400;
@@ -104,9 +104,9 @@
   transform: scale(1.02);
 }
 
-.navbarBoxButton {
+.mintButton {
   width: 100%;
-  background-color: var(--color-main);
+  background-color: var(--color-disabledgray);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -121,6 +121,7 @@
   cursor: pointer;
 }
 
+
 .navbarBoxImage {
   width: 100%;
   max-width: 550px;
@@ -128,7 +129,7 @@
 }
 
 .navbarLogo {
-  margin: 0px 0px 0px 0px;
+  margin: -10px 0px 0px 0px;
   z-index: 9999;
 }
 
@@ -185,14 +186,14 @@
   margin-top: -51px;
 }
 
-.navbarBoxButton:active {
+.mintButton:active {
   -webkit-transform: scale(1.04);
   -moz-transform: scale(1.04);
   -o-transform: scale(1.04);
   transform: scale(1.04);
 }
 
-.navbarBoxButton:hover {
+.mintButton:hover {
   -webkit-transform: scale(1.02);
   -moz-transform: scale(1.02);
   -o-transform: scale(1.02);
@@ -269,6 +270,182 @@
   z-index: 999;
   overflow: hidden;
 }
+
+/* +++ +++ Birth Info Form +++ +++ */
+
+.birthInfoForm {
+  width: 150%;
+  padding: 35px 50px 35px 50px;
+  margin: 40px 275px 0px 275px;
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: var(--color-black);
+}
+
+.birthInfoTitle {
+  font-weight: 400;
+  font-size: 50px;
+  margin: -10px 0px 20px 0px;
+  line-height: 94.8%;
+  text-align: center;
+  color: var(--color-main);
+}
+
+.birthInfoSubtitle {
+  color: var(--color-lightyellow);
+  margin: 0px 0px 0px 0px;
+  text-align: center;
+}
+
+/* +++ Birthday Entry +++ */
+
+.birthdayInputContainer {
+  justify-items: left;
+  width: 385px;
+}
+
+.birthdayTitle {
+  color: #ffffff;
+  margin: 20px 0px 10px 0px;
+  font-size: 20px;
+}
+
+.birthDayEntry {
+  padding: 0px 0px 0px 0px;
+  width: 52px;
+  font-size: 20px;
+  margin: 0px 6px 0px 0px;
+}
+
+.birthMonthSelect {
+  padding: 0px 0px 1px 0px;
+  width: 118px;
+  font-size: 20px;
+  margin: 0px 6px 0px 0px;
+}
+
+.birthYearEntry {
+  padding: 0px 0px 0px 0px;
+  width: 58px;
+  font-size: 20px;
+}
+
+/* +++ Birth Time Entry +++ */
+
+.birthTimeInputContainer {
+  margin: 20px 0px 0px 0px;
+  justify-items: left;
+  width: 385px;
+}
+
+.birthTimeTitle {
+  color: #ffffff;
+  margin: 0px 0px 5px 0px;
+  font-size: 20px;
+}
+
+.timeGuessText {
+  color: #bbbbbb;
+  margin: 0px 0px 5px 10px;
+  font-size: 15px;
+}
+
+.birthTimeUnknown {
+  margin-top: 10px;
+}
+
+.timeUnknownLabel {
+  color: var(--color-lightyellow);
+}
+
+.birthHourSelect {
+  padding: 0px 0px 1px 0px;
+  width: 46px;
+  font-size: 20px;
+  margin: 10px 0px 0px 0px;
+}
+
+.colon {
+  color: #ffffff;
+  margin: 0px 0px 5px 0px;
+  font-size: 20px;
+}
+
+.birthMinuteEntry {
+  padding: 0px 0px 0px 0px;
+  width: 42px;
+  font-size: 20px;
+  margin: 0px 6px 0px 0px;
+}
+
+.birthAMPMSelect {
+  padding: 0px 0px 1px 0px;
+  width: 54px;
+  font-size: 20px;
+}
+
+/* +++ Birth Location Entry +++ */
+
+.birthLocationInputContainer {
+  margin: 20px 0px 0px 0px;
+  justify-items: left;
+  width: 385px;
+}
+
+.birthLocationTitle {
+  color: #ffffff;
+  margin: 0px 0px 5px 0px;
+  font-size: 20px;
+}
+
+.locationGuessText {
+  color: #bbbbbb;
+  margin: 0px 0px 5px 10px;
+  font-size: 15px;
+}
+
+.birthLocationUnknown {
+  margin-top: 10px;
+}
+
+.locationUnknownLabel {
+  color: var(--color-lightyellow);
+}
+
+.birthCountrySelect {
+  padding: 0px 0px 1px 0px;
+  width: 120px;
+  height: 25px;
+  font-size: 16px;
+  margin: 10px 6px 0px 0px;
+}
+
+.birthStateSelect {
+  padding: 0px 0px 1px 0px;
+  width: 120px;
+  height: 25px;
+  font-size: 16px;
+  margin: 0px 6px 0px 0px;
+}
+
+.birthCitySelect {
+  padding: 0px 0px 1px 0px;
+  width: 120px;
+  height: 25px;
+  font-size: 16px;
+}
+
+/* +++ Input Validity Message +++ */
+
+.validityMessage {
+  color: var(--color-warningred);
+  margin: 10px 0px -20px 0px;
+}
+
+/* --- --- Birth Info Form --- --- */
 
 @media only screen and (max-width: 1100px) {
   .navbarBoxImage {
