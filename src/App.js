@@ -6,8 +6,9 @@ import Footer from './components/footer/Footer'
 //E~ Added for background implementation
 import Background from './components/background/Background'
 import { Switch, BrowserRouter, Route, Routes } from 'react-router-dom';
-import AvatarPage from './pages/avatarpage/AvatarPage';
-import MintPage from './pages/mintpage/MintPage';
+import AvatarPage from './pages/avatar/AvatarPage';
+import MintPage from './pages/mint/MintPage';
+import NFZFILPage from './pages/nfzfil/NFZFIL'
 
 const App = () => {
      return (
@@ -19,6 +20,7 @@ const App = () => {
                <Route exact path="/mint" element={<MintPage />} />
                <Route exact path="/avatar" element={<AvatarPage />} />
                <Route exact path="/test" element={<MintPage />} />
+               <Route exact path="/nfzfil" element={<NFZFILPage />} />
           </Routes>
           <Footer />
           </BrowserRouter>
