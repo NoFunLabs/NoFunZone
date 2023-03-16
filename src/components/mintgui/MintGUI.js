@@ -2,492 +2,1878 @@ import React, { useState } from 'react'
 
 import { FormatTypes, Interface } from "@ethersproject/abi";
 
-import logo from '../../image/logo.png'
+import fireLMNTL from '../../image/LMNTLfire1.png'
+import waterLMNTL from '../../image/LMNTLwater1.png'
+import earthLMNTL from '../../image/LMNTLearth1.png'
+import airLMNTL from '../../image/LMNTLair1.png'
+import mintButtonBottomImage from '../../image/button_4x1.png'
 
 import './mintgui.css'
 
-import { Origin, Horoscope } from "../../../node_modules/circular-natal-horoscope-js";
-
-import pinToIPFS from "./pin-to-ipfs.js";
-import createAlchmMetadata from "./create-alchm-metadata";
-import alchemizer from "./alchemizer";
-
-import locationCSV from "./allLocationsUSfirst.csv";
-
-////////////////////////////////////////
-//TEST - for testing purposes
-var test_mode = false;
-var test_button_display = 'none';
-if (window.location.href.includes('test')) {
-  test_mode = true;
-  test_button_display = 'visible';
-}
-
-var defaultBirthdays = {};
-defaultBirthdays['Evan'] = new Origin({
-    year: 1990,
-    month: 3, // 0 = January, 11 = December!
-    date: 20,
-    hour: 16,
-    minute: 20,
-    latitude: 40.7498,
-    longitude: -73.7976
-});
-defaultBirthdays["Greg"] = new Origin({
-    year: 1991,
-    month: 5, // 0 = January, 11 = December!
-    date: 23,
-    hour: 10,
-    minute: 24,
-    latitude: 40.7498,
-    longitude: -73.7976
-});
-////////////////////////////////////////
-
 const { ethers } = require("ethers");
+const { utils } = require('ethers').utils;
+const { BigNumber } = require('ethers').BigNumber;
+
+let network = 'Goerli';
 
 const openSeaLinkDelay = 8;
 
 let address, signer, provider;
-var mintButtonActive = false;
+var mintButtonActive = true;
+
+// Recently added for NFZ final version
+
+var element_choice = false;
 
 //E~ Update these variables manually according to the smart contract address of your NFT collection,
 //   and the URI of the metadata to be minted as an NFT
-let contractAddress = '0xA055CD98B0b4f09bb96ba43BE64963BdF11783e1';
-//let metadataURI = 'https://gateway.pinata.cloud/ipfs/QmeDnUfLX7WKufRgc2b6GMb9uVRV5DEFwd9Lpr1QwjLfPc';
-let network = 'Goerli';
 
-//E~ Added for creating OpenSea link
-var openSeaPrefixes = {
-  Mainnet: 'https://opensea.io/assets/ethereum/',
-  Goerli: 'https://testnets.opensea.io/assets/goerli/'
+//Recently Added
+
+let contractName = 'LMNTL';
+
+let contractAddressList = {'Mainnet': '',
+                           'Goerli': '0xE914eCA2a17f7d402a5095fF44c92ECCCD26F912',
+                           'Hyperspace': '0xB4fECac2F5BdEc2eD15547cF857464c8691b9849'}
+let contractAddress = contractAddressList[network];
+
+let jsonAbiList = {'Mainnet': `[]`,
+                   'Goerli': `[
+                    {
+                      "inputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "constructor"
+                    },
+                    {
+                      "anonymous": false,
+                      "inputs": [
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "account",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "operator",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": false,
+                          "internalType": "bool",
+                          "name": "approved",
+                          "type": "bool"
+                        }
+                      ],
+                      "name": "ApprovalForAll",
+                      "type": "event"
+                    },
+                    {
+                      "anonymous": false,
+                      "inputs": [
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "operator",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "from",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "to",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": false,
+                          "internalType": "uint256[]",
+                          "name": "ids",
+                          "type": "uint256[]"
+                        },
+                        {
+                          "indexed": false,
+                          "internalType": "uint256[]",
+                          "name": "values",
+                          "type": "uint256[]"
+                        }
+                      ],
+                      "name": "TransferBatch",
+                      "type": "event"
+                    },
+                    {
+                      "anonymous": false,
+                      "inputs": [
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "operator",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "from",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "to",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": false,
+                          "internalType": "uint256",
+                          "name": "id",
+                          "type": "uint256"
+                        },
+                        {
+                          "indexed": false,
+                          "internalType": "uint256",
+                          "name": "value",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "TransferSingle",
+                      "type": "event"
+                    },
+                    {
+                      "anonymous": false,
+                      "inputs": [
+                        {
+                          "indexed": false,
+                          "internalType": "string",
+                          "name": "value",
+                          "type": "string"
+                        },
+                        {
+                          "indexed": true,
+                          "internalType": "uint256",
+                          "name": "id",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "URI",
+                      "type": "event"
+                    },
+                    {
+                      "inputs": [],
+                      "name": "INTERFACE_ID_ERC1155",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint8",
+                          "name": "",
+                          "type": "uint8"
+                        }
+                      ],
+                      "name": "attributes",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "account",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "id",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "balanceOf",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address[]",
+                          "name": "accounts",
+                          "type": "address[]"
+                        },
+                        {
+                          "internalType": "uint256[]",
+                          "name": "ids",
+                          "type": "uint256[]"
+                        }
+                      ],
+                      "name": "balanceOfBatch",
+                      "outputs": [
+                        {
+                          "internalType": "uint256[]",
+                          "name": "",
+                          "type": "uint256[]"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "tokenID",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "newImageURI",
+                          "type": "string"
+                        }
+                      ],
+                      "name": "changeImageURI",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "",
+                          "type": "uint16"
+                        }
+                      ],
+                      "name": "characters",
+                      "outputs": [
+                        {
+                          "internalType": "uint8",
+                          "name": "element",
+                          "type": "uint8"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "exp",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "imageURI",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint8",
+                          "name": "",
+                          "type": "uint8"
+                        }
+                      ],
+                      "name": "elements",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "tokenID",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "exp",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "gainEXP",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "_userAddress",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "exp",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "gainUserEXP",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint8",
+                          "name": "num",
+                          "type": "uint8"
+                        }
+                      ],
+                      "name": "getAttribute",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "tokenID",
+                          "type": "uint16"
+                        }
+                      ],
+                      "name": "getCurrentLevel",
+                      "outputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "currentLevel",
+                          "type": "uint16"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "tokenID",
+                          "type": "uint16"
+                        }
+                      ],
+                      "name": "getCurrentStats",
+                      "outputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "currentLevel",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "exp",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "fire",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "water",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "air",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "earth",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "charisma",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "creativity",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "cunning",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "patience",
+                          "type": "uint16"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint8",
+                          "name": "num",
+                          "type": "uint8"
+                        }
+                      ],
+                      "name": "getElement",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "tokenID",
+                          "type": "uint16"
+                        }
+                      ],
+                      "name": "getMetadata",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "tokenID",
+                          "type": "uint16"
+                        }
+                      ],
+                      "name": "getPrimaryStats",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "element",
+                          "type": "string"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "level",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "exp",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "imageURI",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "_userAddress",
+                          "type": "address"
+                        }
+                      ],
+                      "name": "getUserCurrentStats",
+                      "outputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "currentLevel",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "exp",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "fire",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "water",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "air",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "earth",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "charisma",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "creativity",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "cunning",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "patience",
+                          "type": "uint16"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "_userAddress",
+                          "type": "address"
+                        }
+                      ],
+                      "name": "getUserMetadata",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "metadataUri",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "_userAddress",
+                          "type": "address"
+                        }
+                      ],
+                      "name": "getUserPrimaryStats",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "element",
+                          "type": "string"
+                        },
+                        {
+                          "internalType": "uint16",
+                          "name": "level",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "exp",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "imageURI",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "_userAddress",
+                          "type": "address"
+                        }
+                      ],
+                      "name": "getUserTokenID",
+                      "outputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "largestTokenId",
+                          "type": "uint16"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "account",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "operator",
+                          "type": "address"
+                        }
+                      ],
+                      "name": "isApprovedForAll",
+                      "outputs": [
+                        {
+                          "internalType": "bool",
+                          "name": "",
+                          "type": "bool"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "_userAddress",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "imageURI",
+                          "type": "string"
+                        }
+                      ],
+                      "name": "levelUp",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint8",
+                          "name": "element",
+                          "type": "uint8"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "imageURI",
+                          "type": "string"
+                        }
+                      ],
+                      "name": "mint",
+                      "outputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "",
+                          "type": "uint16"
+                        }
+                      ],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [],
+                      "name": "nftCounter",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "_value",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "from",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "to",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256[]",
+                          "name": "ids",
+                          "type": "uint256[]"
+                        },
+                        {
+                          "internalType": "uint256[]",
+                          "name": "amounts",
+                          "type": "uint256[]"
+                        },
+                        {
+                          "internalType": "bytes",
+                          "name": "data",
+                          "type": "bytes"
+                        }
+                      ],
+                      "name": "safeBatchTransferFrom",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "from",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "to",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "id",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "amount",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "bytes",
+                          "name": "data",
+                          "type": "bytes"
+                        }
+                      ],
+                      "name": "safeTransferFrom",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "operator",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "bool",
+                          "name": "approved",
+                          "type": "bool"
+                        }
+                      ],
+                      "name": "setApprovalForAll",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "tokenID",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "_metadata",
+                          "type": "string"
+                        }
+                      ],
+                      "name": "setMetadata",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "bytes4",
+                          "name": "interfaceId",
+                          "type": "bytes4"
+                        }
+                      ],
+                      "name": "supportsInterface",
+                      "outputs": [
+                        {
+                          "internalType": "bool",
+                          "name": "",
+                          "type": "bool"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "",
+                          "type": "uint16"
+                        }
+                      ],
+                      "name": "tokenMetadata",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "tokenOwners",
+                      "outputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "",
+                          "type": "uint16"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint16",
+                          "name": "tokenID",
+                          "type": "uint16"
+                        },
+                        {
+                          "internalType": "uint8",
+                          "name": "element",
+                          "type": "uint8"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "exp",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "imageURI",
+                          "type": "string"
+                        }
+                      ],
+                      "name": "updateCharacter",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "uri",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    }
+                   ]`,
+                   'Hyperspace': `[
+                    {
+                      "inputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "constructor"
+                    },
+                    {
+                      "anonymous": false,
+                      "inputs": [
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "account",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "operator",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": false,
+                          "internalType": "bool",
+                          "name": "approved",
+                          "type": "bool"
+                        }
+                      ],
+                      "name": "ApprovalForAll",
+                      "type": "event"
+                    },
+                    {
+                      "anonymous": false,
+                      "inputs": [
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "operator",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "from",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "to",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": false,
+                          "internalType": "uint256[]",
+                          "name": "ids",
+                          "type": "uint256[]"
+                        },
+                        {
+                          "indexed": false,
+                          "internalType": "uint256[]",
+                          "name": "values",
+                          "type": "uint256[]"
+                        }
+                      ],
+                      "name": "TransferBatch",
+                      "type": "event"
+                    },
+                    {
+                      "anonymous": false,
+                      "inputs": [
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "operator",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "from",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": true,
+                          "internalType": "address",
+                          "name": "to",
+                          "type": "address"
+                        },
+                        {
+                          "indexed": false,
+                          "internalType": "uint256",
+                          "name": "id",
+                          "type": "uint256"
+                        },
+                        {
+                          "indexed": false,
+                          "internalType": "uint256",
+                          "name": "value",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "TransferSingle",
+                      "type": "event"
+                    },
+                    {
+                      "anonymous": false,
+                      "inputs": [
+                        {
+                          "indexed": false,
+                          "internalType": "string",
+                          "name": "value",
+                          "type": "string"
+                        },
+                        {
+                          "indexed": true,
+                          "internalType": "uint256",
+                          "name": "id",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "URI",
+                      "type": "event"
+                    },
+                    {
+                      "inputs": [],
+                      "name": "INTERFACE_ID_ERC1155",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "account",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "id",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "balanceOf",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address[]",
+                          "name": "accounts",
+                          "type": "address[]"
+                        },
+                        {
+                          "internalType": "uint256[]",
+                          "name": "ids",
+                          "type": "uint256[]"
+                        }
+                      ],
+                      "name": "balanceOfBatch",
+                      "outputs": [
+                        {
+                          "internalType": "uint256[]",
+                          "name": "",
+                          "type": "uint256[]"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "id",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "newImageURI",
+                          "type": "string"
+                        }
+                      ],
+                      "name": "changeImageURI",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "characters",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "level",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "exp",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "creativity",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "cunning",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "charisma",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "patience",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "fire",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "water",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "air",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "earth",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "imageURI",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "_tokenId",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "getMetadata",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "_tokenId",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "getStats",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "id",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "level",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "exp",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "creativity",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "cunning",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "charisma",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "patience",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "fire",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "water",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "air",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "earth",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "_userAddress",
+                          "type": "address"
+                        }
+                      ],
+                      "name": "getUserMetadata",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "metadataUri",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "_userAddress",
+                          "type": "address"
+                        }
+                      ],
+                      "name": "getUserStats",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "id",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "level",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "exp",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "creativity",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "cunning",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "charisma",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "patience",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "fire",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "water",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "air",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "earth",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "_userAddress",
+                          "type": "address"
+                        }
+                      ],
+                      "name": "getUserTokenID",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "largestTokenId",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "account",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "operator",
+                          "type": "address"
+                        }
+                      ],
+                      "name": "isApprovedForAll",
+                      "outputs": [
+                        {
+                          "internalType": "bool",
+                          "name": "",
+                          "type": "bool"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "_id",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "isNonFungible",
+                      "outputs": [
+                        {
+                          "internalType": "bool",
+                          "name": "",
+                          "type": "bool"
+                        }
+                      ],
+                      "stateMutability": "pure",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "_userAddress",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "imageURI",
+                          "type": "string"
+                        }
+                      ],
+                      "name": "levelUp",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "fire",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "water",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "air",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "earth",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "imageURI",
+                          "type": "string"
+                        }
+                      ],
+                      "name": "mint",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [],
+                      "name": "nftCounter",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "_value",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "max",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "random",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "randomInt",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "from",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "to",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256[]",
+                          "name": "ids",
+                          "type": "uint256[]"
+                        },
+                        {
+                          "internalType": "uint256[]",
+                          "name": "amounts",
+                          "type": "uint256[]"
+                        },
+                        {
+                          "internalType": "bytes",
+                          "name": "data",
+                          "type": "bytes"
+                        }
+                      ],
+                      "name": "safeBatchTransferFrom",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "from",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "address",
+                          "name": "to",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "id",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "amount",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "bytes",
+                          "name": "data",
+                          "type": "bytes"
+                        }
+                      ],
+                      "name": "safeTransferFrom",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "operator",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "bool",
+                          "name": "approved",
+                          "type": "bool"
+                        }
+                      ],
+                      "name": "setApprovalForAll",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "_tokenId",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "string",
+                          "name": "_metadata",
+                          "type": "string"
+                        }
+                      ],
+                      "name": "setMetadata",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "bytes4",
+                          "name": "interfaceId",
+                          "type": "bytes4"
+                        }
+                      ],
+                      "name": "supportsInterface",
+                      "outputs": [
+                        {
+                          "internalType": "bool",
+                          "name": "",
+                          "type": "bool"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "tokenMetadata",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "address",
+                          "name": "",
+                          "type": "address"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "tokenOwners",
+                      "outputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "id",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "level",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "exp",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "creativity",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "cunning",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "charisma",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "patience",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "fire",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "water",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "air",
+                          "type": "uint256"
+                        },
+                        {
+                          "internalType": "uint256",
+                          "name": "earth",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "updateCharacter",
+                      "outputs": [],
+                      "stateMutability": "nonpayable",
+                      "type": "function"
+                    },
+                    {
+                      "inputs": [
+                        {
+                          "internalType": "uint256",
+                          "name": "",
+                          "type": "uint256"
+                        }
+                      ],
+                      "name": "uri",
+                      "outputs": [
+                        {
+                          "internalType": "string",
+                          "name": "",
+                          "type": "string"
+                        }
+                      ],
+                      "stateMutability": "view",
+                      "type": "function"
+                    }
+                  ]`}
+
+const jsonAbi = jsonAbiList[network];
+
+
+//Recently Added
+
+var user_avatar = "";
+var user_metadata = "";
+var user_tokenID = "";
+var user_primary_stats = [];
+var user_stats = {'ID': 0,
+                  'Level': 0,
+                  'EXP': 0,
+                  'Element': '',
+                  'Fire': 0,
+                  'Water': 0,
+                  'Air': 0,
+                  'Earth': 0,
+                  'Charisma': 0,
+                  'Creativity': 0,
+                  'Cunning': 0,
+                  'Patience': 0};
+var user_stats_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+const elements = {0: 'Fire',
+                1: 'Water',
+                2: 'Air',
+                3: 'Earth'};
+
+const ipfs_prefixes = {
+  Pinata: 'https://gateway.pinata.cloud/ipfs/',
+  Infura: '',
+  Filecoin: 'https://ipfs.io/ipfs/'
 }
-let openSeaPrefix = openSeaPrefixes[network];
+const network_ipfs_dict = {'Mainnet': 'Pinata',
+                           'Goerli': 'Pinata',
+                           'Hyperspace': 'Filecoin'};
+var network_default_ipfs = network_ipfs_dict[network]
+var ipfs_prefix = ipfs_prefixes[network_default_ipfs];
 
-var mobile = false;
-if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-  console.log("Mobile device detected");
-  mobile = true;
-};
+var image_uris, base_image_uri;
+var base_image_uri = '';
+if (network_default_ipfs === 'Filecoin') {
+  image_uris = {'Fire': {1:'https://ipfs.io/ipfs/bafybeid2oy2tbsig674eh7n4kp4gqribvpr6ajodxokfhyzftl3il7troy/LMNTLfire1.png', 
+                               2:'https://ipfs.io/ipfs/bafybeiaejbgk6zlz43r4fgubbxv5m3nveb23wt2mtywwqhaoj627vpf7xi/LMNTLfire2.png'},
+                      'Water': {1:'https://ipfs.io/ipfs/bafybeihrxhmnywfxxv6jfe2adfbe22m4r56dfkpgksdn2fdbkdardxcjhu/LMNTLwater1.png',
+                                2:'https://ipfs.io/ipfs/bafybeidmkzry7ycmrii5iaibbycocptpbm5x6xo7m5y3yvln3qzdw53xwi/LMNTLwater2.png'},
+                      'Air':{1:'https://ipfs.io/ipfs/bafybeifxei46fbqxdcriqls6bb4bkvehqhs7ibbsx62mena3fisf73tk3a/LMNTLair1.png',
+                             2:'https://ipfs.io/ipfs/bafybeihp5xj3ynypjsl2si2ve47bs4uydm6tvyxvljnbllyrobxom67hxa/LMNTLair2.png'},
+                      'Earth': {1:'https://ipfs.io/ipfs/bafybeibh7cukho5d2i7gjtuophcw455wnzk5rvy5cp7dwva74izhwst46a/LMNTLearth1.png',
+                                2:'https://ipfs.io/ipfs/bafybeicnog62bhxyinwq6f43pkalkr26ahcj3fjpl3nizg5deaaz7cruxm/LMNTLearth2.png'}}
+} else if (network_default_ipfs === 'Pinata') {
+  base_image_uri = 'QmPF4nrDbTnGk2UWduZDw2FCHZcF6HJicYDdsDAkEqJgH7';
+  image_uris = {'Fire': {1:'/LMNTLfire1.png', 
+                         2:'/LMNTLfire2.png'},
+                'Water': {1:'/LMNTLwater1.png',
+                          2:'/LMNTLwater2.png'},
+                'Air':{1:'/LMNTLair1.png',
+                       2:'/LMNTLair2.png'},
+                'Earth': {1:'/LMNTLearth1.png',
+                          2:'/LMNTLearth2.png'}}
+}
+
+function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 const MintGUI = () => {
 
 const [isConnected, toggleConnected] = useState(0);
-const [isMinted, toggleMinted] = useState(0);
-
-const jsonAbi = `[
-  {
-    "inputs": [],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "approved",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "Approval",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "operator",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "bool",
-        "name": "approved",
-        "type": "bool"
-      }
-    ],
-    "name": "ApprovalForAll",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "previousOwner",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "Transfer",
-    "type": "event"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "approve",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      }
-    ],
-    "name": "balanceOf",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "getApproved",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "owner",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "operator",
-        "type": "address"
-      }
-    ],
-    "name": "isApprovedForAll",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "recipient",
-        "type": "address"
-      },
-      {
-        "internalType": "string",
-        "name": "tokenURI",
-        "type": "string"
-      }
-    ],
-    "name": "mintNFT",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "name",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "ownerOf",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "renounceOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "safeTransferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "internalType": "bytes",
-        "name": "_data",
-        "type": "bytes"
-      }
-    ],
-    "name": "safeTransferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "operator",
-        "type": "address"
-      },
-      {
-        "internalType": "bool",
-        "name": "approved",
-        "type": "bool"
-      }
-    ],
-    "name": "setApprovalForAll",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes4",
-        "name": "interfaceId",
-        "type": "bytes4"
-      }
-    ],
-    "name": "supportsInterface",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "symbol",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "tokenURI",
-    "outputs": [
-      {
-        "internalType": "string",
-        "name": "",
-        "type": "string"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      }
-    ],
-    "name": "transferFrom",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "newOwner",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
-]`;
+const [isMinted, toggleMinted] = useState(0);  
 
 const iface = new Interface(jsonAbi);
 iface.format(FormatTypes.full);
@@ -504,15 +1890,28 @@ function setAddress(ethaddy) {
     //alert("Connected: " + address);
 }
 
-function handleMintClick() {
-  var validityMessage = activateMintButton();
+function handleLMNTLClick(event) {
+  document.getElementById('Fire').style.border = 'none';
+  document.getElementById('Water').style.border = 'none';
+  document.getElementById('Earth').style.border = 'none';
+  document.getElementById('Air').style.border = 'none';
+  element_choice = event.target['alt'];
+  var clickedButton = document.getElementById(element_choice);
+  clickedButton.style.border = 'solid';
+  clickedButton.style.color = 'var(--color-nfzorange)';
+  clickedButton.style.borderWidth = '18px';
+  document.getElementById('mintButtonBottomText').textContent = 'Mint ' + element_choice;
+}
+
+function handleMintClick(event) {
   if (mintButtonActive) {
     if (!isConnected) {connectWallet()}
-      else {mintNFT();
+      else if (element_choice) {
+        {mintNFT(element_choice);
+      }
     }
   } else {
-    document.getElementById("validityMessage").textContent = validityMessage;
-    document.getElementById("validityMessage").style.color = '#ff6262';
+    window.location.href = window.location['origin'] + '/avatar';
   }
 }
 
@@ -525,204 +1924,139 @@ async function connectWallet() {
   setAddress( await signer.getAddress() );
   let balance = await signer.getBalance();
   console.log(await ethers.utils.formatEther(balance));
+  user_metadata = await getUserMetadata();
+  console.log('User Metadata: ', user_metadata);
+  setAvatarURI(user_metadata);
+  //document.getElementById('userAvatar').src = user_avatar;
+  user_stats = await getUserStats();
 }
 
-function convertDictToString(dict, depth=0) {
-  var new_string = "";
-  for (const key in dict) {
-    var indent_count = 0;
-    var space_string = "";
-    while (indent_count < depth) {
-      space_string += "____"
-      indent_count += 1;
-    }
-    if (depth === 0) {
-      new_string += '<br>';
-    }
-    new_string += '<br>' + space_string + key;
-    if (dict.hasOwnProperty(key)) {
-      const value = dict[key];
-      if (typeof value === 'object') {
-        //new_string += "<br>";
-        new_string += convertDictToString(value, depth + 1);
-      } else {
-        new_string += ': ' + value;
-      }
-      //new_string += '<br>';
-    }
-  }
-  return(new_string);
-}
 
-function handleSubmitClick (event) {
-  var name;
-  if (event.target.value.includes('Use Current')) {
-    name = false;
-  } else if (event.target.value.includes('Evan')) {
-    name = 'Evan';
-  } else if (event.target.value.includes('Greg')) {
-    name = 'Greg';
-  }
-  const alchemy = alchemizer.alchemize(astrologize(name));
-  console.log("Alchm Output: ", alchemy);
-  document.getElementById("alchmInfo").innerHTML = convertDictToString(alchemy);
-}
-
-function activateMintButton() {
-  var validityMessage = 'Birth info confirmed! Ready to mint!';
-  var mintButton = document.getElementById("mintButton");
-  // Checks birth day
-  const birthDay = Number(document.getElementById("birthDayEntry").value);
-  if (Number(document.getElementById("birthYearEntry").value) >= 0 &&
-    document.getElementById("birthYearEntry").value !== '' &&
-    birthDay > 0 &&
-    document.getElementById("birthDayEntry").value !== '' &&
-    document.getElementById("birthMonthSelect").value !== 'Month' &&
-    ((document.getElementById("birthMonthSelect").value === '0' && birthDay <= 31) ||
-    (document.getElementById("birthMonthSelect").value === '1' && birthDay <= 29) ||
-    (document.getElementById("birthMonthSelect").value === '2' && birthDay <= 31) ||
-    (document.getElementById("birthMonthSelect").value === '3' && birthDay <= 30) ||
-    (document.getElementById("birthMonthSelect").value === '4' && birthDay <= 31) ||
-    (document.getElementById("birthMonthSelect").value === '5' && birthDay <= 30) ||
-    (document.getElementById("birthMonthSelect").value === '6' && birthDay <= 31) ||
-    (document.getElementById("birthMonthSelect").value === '7' && birthDay <= 31) ||
-    (document.getElementById("birthMonthSelect").value === '8' && birthDay <= 30) ||
-    (document.getElementById("birthMonthSelect").value === '9' && birthDay <= 31) ||
-    (document.getElementById("birthMonthSelect").value === '10' && birthDay <= 30) ||
-    (document.getElementById("birthMonthSelect").value === '11' && birthDay <= 31)))
-  {
-    // Checks birth time
-    console.log("Birthday is valid...");
-    if (document.getElementById("validityMessage").textContent === "Please choose a valid birth day.") {
-      document.getElementById("validityMessage").textContent = '';
-    }
-    if (document.getElementById("birthTimeUnknown").checked ||
-      (Number(document.getElementById("birthMinuteEntry").value) <= 60 &&
-      Number(document.getElementById("birthMinuteEntry").value) >= 0 &&
-      document.getElementById("birthMinuteEntry").value) !== '')
-    {
-      // Checks birth location
-      console.log("Birth time is valid...");
-      if (document.getElementById("validityMessage").textContent === "Please choose a valid birth time.") {
-        document.getElementById("validityMessage").textContent = '';
-      }
-      if (fetchCoordinates()) {
-        console.log("Birth location is valid!");
-        if (document.getElementById("validityMessage").textContent === "Please choose a valid birth location.") {
-          document.getElementById("validityMessage").textContent = '';
-        }
-        console.log("ENABLED mint button");
-        mintButtonActive = true;
-        mintButton.style.backgroundColor = '#f2ff61';
-      } else {
-        console.log("Birth location is NOT valid!");
-        console.log("DISABLED mint button");
-        validityMessage = "Please choose a valid birth location.";
-        mintButtonActive = false;
-        mintButton.style.backgroundColor = '#bbbbbb';
-        
-      }
-    } else {
-      console.log("Birth time is NOT valid!");
-      console.log("DISABLED mint button");
-      validityMessage = "Please choose a valid birth time.";
-      mintButtonActive = false;
-      mintButton.style.backgroundColor = '#bbbbbb';
-    }
-  } else {
-    console.log("Birth day is NOT valid!");
-    console.log("DISABLED mint button");
-    validityMessage = "Please choose a valid birth day.";
-    mintButtonActive = false;
-    mintButton.style.backgroundColor = '#bbbbbb';
-  }
-  if (mintButtonActive) {
-    document.getElementById("validityMessage").textContent = validityMessage;
-    document.getElementById("validityMessage").style.color = '#00ff00';
-  } else if (document.getElementById("validityMessage").textContent.length > 0) {
-    document.getElementById("validityMessage").textContent = validityMessage;
-    document.getElementById("validityMessage").style.color = '#ff6262';
-  }
-  return validityMessage;
-}
-
-function astrologize(use_default_birthday=false) {
-  var origin;
-  // Uses Evan's birthday automatically without input. Used for testing
-  if (use_default_birthday) {
-    origin = defaultBirthdays[use_default_birthday];
-  } else {
-    // If "Don't Know" is checked for birth time, 12:00 PM is used
-    if (document.getElementById("birthTimeUnknown").value.checked) {
-      birthHour = 11;
-      birthMinute = 0;
-    } else {
-      birthHour = document.getElementById("birthHourSelect").value;
-      birthMinute = document.getElementById("birthMinuteEntry").value;
-      if (document.getElementById("birthAMPMSelect").value === 'PM') {
-        birthHour += 12;
-        if (birthHour === 24) {
-          birthHour = 0;
-        }
-      }
-    }
-    // If "Don't Know" is checked for birth location, fetchCoordinates() uses the highest population city in user's time zone
-    birthCoordinates = fetchCoordinates();
-    origin = new Origin({
-      year: document.getElementById("birthYearEntry").value,
-      month: document.getElementById("birthMonthSelect").value, // 0 = January, 11 = December!
-      date: document.getElementById("birthDayEntry").value,
-      hour: birthHour,
-      minute: birthMinute,
-      latitude: birthCoordinates["Latitude"],
-      longitude: birthCoordinates["Longitude"]
-    });
-  }
-  
-  const horoscope = new Horoscope({
-    origin: new Origin(origin),
-    houseSystem: "whole-sign",
-    zodiac: "tropical",
-    aspectPoints: ['bodies', 'points', 'angles'],
-    aspectWithPoints: ['bodies', 'points', 'angles'],
-    aspectTypes: ["major", "minor"],
-    customOrbs: {},
-    language: 'en'
-  });
-  console.log("Sun Sign: ", horoscope.CelestialBodies['sun']['Sign']['label']);
-  console.log("Celestial Bodies: ", horoscope.CelestialBodies);
-  console.log("Aspects: ", horoscope.Aspects);
-  console.log("Ascendant: ", horoscope.Ascendant);
-  //horoscope.CelestialBodies['all'].forEach(entry =>
-  //  console.log(entry['label'], entry['Sign']['label'], entry['House']['label']))
-  return(horoscope);
-}
-
-async function mintNFT() {
+async function mintNFT(element) {
   const nftContract = new ethers.Contract(contractAddress, iface,signer);
-  const horoscope = astrologize();
-  const alchemy = alchemizer.alchemize(horoscope);
-  const NFTmetadata = await createAlchmMetadata.createMetadata(horoscope.CelestialBodies);
-  console.log("Metadata: ", NFTmetadata);
-  const metadataURI = pinToIPFS.pinMetadata(NFTmetadata);
-  metadataURI
-  .then(metadataURI => {
-    console.log("The token URI is: ", metadataURI)
-    //mintNFT(metadataURI)
-  })
-  const transactionInfo = await nftContract.mintNFT(address, metadataURI);
+  const mintButtonBottom = document.getElementById('mintButtonBottomText');
+
+  var transactionInfo;
+  console.log(element);
+  var imageURI = image_uris[element][1];
+  setAvatarURI(imageURI);
+  if (element === 'Fire') {
+    transactionInfo = await nftContract.mint(0, user_avatar);
+  } else if (element === 'Water') {
+    transactionInfo = await nftContract.mint(1, user_avatar);
+  } else if (element === 'Air') {
+    transactionInfo = await nftContract.mint(2, user_avatar);
+  } else if (element === 'Earth') {
+    transactionInfo = await nftContract.mint(3, user_avatar);
+  }  
   toggleMinted ( !isMinted );
   console.log("Transaction info: ", transactionInfo);
   var transactionHash = transactionInfo.hash;
   console.log("Transaction hash: ", transactionHash);
   var transactionReceipt = await provider.getTransactionReceipt(transactionHash);
   console.log("Immediate transaction receipt: ", transactionReceipt);
-  document.getElementById('mintButton').textContent = "MINTING"
+  mintButtonBottom.textContent = "Minting";
   var loop_count = 1;
   while ( !transactionReceipt ) {
     await pause(500);
     if (loop_count > 3) {
-      document.getElementById('mintButton').textContent = "MINTING"
+      mintButtonBottom.textContent = "Minting";
+      loop_count = 0;
+    } else {
+      mintButtonBottom.insertAdjacentText('beforeEnd', '.');
+    }
+    transactionReceipt = await provider.getTransactionReceipt(transactionHash);
+    loop_count+=1;
+  }
+  mintButtonActive = false;
+  console.log("Mined transaction receipt: ", transactionReceipt);
+  var wait_count = 0;
+  while ( wait_count < (2 * openSeaLinkDelay) ) {
+    await pause(500);
+    if (loop_count > 3) {
+      mintButtonBottom.textContent = "Minting";
+      loop_count = 0;
+    } else {
+      mintButtonBottom.insertAdjacentText('beforeEnd', '.');
+    }
+    loop_count+=1;
+    wait_count+=1;
+  }
+  mintButtonBottom.textContent = "View LMNTL!";
+  mintButtonBottom.href = window.location['origin'] + '/avatar';
+  const tokenID = parseInt(transactionReceipt.logs[0].topics[3], 10);
+  console.log("Token ID: ", tokenID);
+  console.log("Transaction Info: ", transactionInfo);
+  user_metadata = await getUserMetadata();
+  console.log("User Metadata: ", user_metadata);
+
+  user_avatar = await setAvatarURI(user_metadata);
+  //document.getElementById('userAvatar').src = user_avatar;
+  user_stats = await getUserStats();
+}
+
+
+// Recently Added
+async function getUserMetadata() {
+  const contract = new ethers.Contract(contractAddress, jsonAbi, provider);
+  let userMetadata = await contract.getUserMetadata(address);
+  return userMetadata;
+}
+
+async function getUserStats() {
+  const contract = new ethers.Contract(contractAddress, jsonAbi, provider);
+  user_tokenID = await contract.getUserTokenID(address);
+  user_primary_stats = await contract.getUserPrimaryStats(address);
+  user_stats_list = await contract.getUserCurrentStats(address);
+  
+  user_stats['ID'] = parseInt(user_tokenID, 10);
+  user_stats['Element'] = capitalize(user_primary_stats[0]);
+  user_stats['Level'] = parseInt(user_stats_list[0], 10);
+  user_stats['EXP'] = parseInt(user_stats_list[1], 10);
+  user_stats['Image URI'] = user_primary_stats[3];
+  user_stats['Fire'] = parseInt(user_stats_list[2], 10);
+  user_stats['Water'] = parseInt(user_stats_list[3], 10);
+  user_stats['Air'] = parseInt(user_stats_list[4], 10);
+  user_stats['Earth'] = parseInt(user_stats_list[5], 10);
+  user_stats['Charisma'] = parseInt(user_stats_list[6], 10);
+  user_stats['Creativity'] = parseInt(user_stats_list[7], 10);
+  user_stats['Cunning'] = parseInt(user_stats_list[8], 10);
+  user_stats['Patience'] = parseInt(user_stats_list[9], 10);
+
+
+  
+
+  console.log('User Element: ', user_stats['Element']);
+
+  console.log('User Stats: ', user_stats);
+  return user_stats;
+}
+
+
+async function levelUp() {
+  const contract = new ethers.Contract(contractAddress, jsonAbi, signer);
+  const previous_user_exp = user_stats['EXP'];
+
+  user_primary_stats = await contract.getUserPrimaryStats(address);
+  user_stats['Level'] = user_primary_stats[1];
+  console.log('User Primary Stats: ', user_primary_stats);
+  
+  var imageURI = image_uris[user_stats['Element']][(user_stats['Level'] % 2) + 1];
+  console.log('New Image URI: ', imageURI);
+
+  const transactionInfo = await contract.levelUp(address, imageURI);
+
+  console.log("Transaction info: ", transactionInfo);
+  var transactionHash = transactionInfo.hash;
+  console.log("Transaction hash: ", transactionHash);
+  var transactionReceipt = await provider.getTransactionReceipt(transactionHash);
+  console.log("Immediate transaction receipt: ", transactionReceipt);
+  document.getElementById('mintButton').textContent = "LEVELING"
+  var loop_count = 1;
+  while ( !transactionReceipt ) {
+    await pause(500);
+    if (loop_count > 3) {
+      document.getElementById('mintButton').textContent = "LEVELING"
       loop_count = 0;
     } else {
       document.getElementById('mintButton').insertAdjacentText('beforeEnd', '.');
@@ -730,552 +2064,96 @@ async function mintNFT() {
     transactionReceipt = await provider.getTransactionReceipt(transactionHash);
     loop_count+=1;
   }
+
+
   console.log("Mined transaction receipt: ", transactionReceipt);
-  var wait_count = 0;
-  while ( wait_count < (2 * openSeaLinkDelay) ) {
-    await pause(500);
-    if (loop_count > 3) {
-      document.getElementById('mintButton').textContent = "MINTING"
-      loop_count = 0;
+  document.getElementById('mintButton').textContent = "LEVEL UP!"
+  console.log("Transaction Info: ", transactionInfo);
+  while (previous_user_exp === user_stats['EXP']) {
+    user_stats = await getUserStats();
+    pause(500);
+  }
+  user_metadata = await getUserMetadata();
+  console.log("User Metadata: ", user_metadata);
+  user_avatar = await setAvatarURI(user_metadata);
+  document.getElementById('userAvatar').src = user_avatar;
+}
+
+async function setAvatarURI(user_metadata) {
+  if (user_metadata) {
+    if ('https://' !== user_metadata.substr(0, 8)) {
+      user_avatar = ipfs_prefix + base_image_uri + user_metadata;
     } else {
-      document.getElementById('mintButton').insertAdjacentText('beforeEnd', '.');
-    }
-    loop_count+=1;
-    wait_count+=1;
-  }
-  document.getElementById('mintButton').textContent = "MINT SUCCESS!"
-  const tokenID = parseInt(transactionReceipt.logs[0].topics[3], 16);
-  console.log("Token ID: ", tokenID);
-  document.getElementById('openSeaLink').style.visibility = 'visible';
-  //document.getElementById('openSeaLink').style.marginBottom = '-60px';
-  document.getElementById('openSeaLink').href = openSeaPrefix + contractAddress + '/' + tokenID.toString();
-}
-
-
-//   const [Mobile, setMobile] = useState(false)
-//   useEffect(() => {
-//     WindowChange()
-//   }, [])
-
-//   //   const HandleMobileMenu = () => {
-//   //     setMobile(!Mobile)
-//   //   }
-
-//   const WindowChange = () => {
-//     if (window.innerWidth > 1050) {
-//       setMobile(false)
-//     }
-//   }
-
-//   window.addEventListener('resize', WindowChange)
-
-
-function handleDayChange(event) {
-  console.log("Day: ", {value: event.target.value});
-  activateMintButton();
-}
-
-function handleMonthChange(event) {
-  console.log("Month: ", {value: event.target.value});
-  activateMintButton();
-}
-
-function handleYearChange(event) {
-  console.log("Year: ", {value: event.target.value});
-  activateMintButton();
-}
-
-function handleTimeUnknown(event) {
-  console.log("Time Unknown: ", {value: event.target.checked});
-  document.getElementById("birthHourSelect").disabled = event.target.checked;
-  document.getElementById("birthMinuteEntry").disabled = event.target.checked;
-  document.getElementById("birthAMPMSelect").disabled = event.target.checked;
-  activateMintButton();
-}
-
-function handleHourChange(event) {
-  console.log("Hour: ", {value: event.target.value});
-  activateMintButton();
-}
-
-function handleMinuteChange(event) {
-  console.log("Minute: ", {value: event.target.value});
-  activateMintButton();
-}
-
-function handleAMPMChange(event) {
-  console.log("AM/PM: ", {value: event.target.value});
-  activateMintButton();
-}
-
-function handleLocationUnknown(event) {
-  console.log("Location Known: ", {value: event.target.checked});
-  document.getElementById("birthCountrySelect").disabled = event.target.checked;
-  if (countryArray_Lowercase.includes(document.getElementById("birthCountrySelect").value.toLowerCase())) {
-    //if (countryArray.includes(event.target.value)) {
-    //if (event.target.value === 'United States') {
-    if (document.getElementById("birthCountrySelect").value.toLowerCase() === 'united states') {
-      document.getElementById("birthStateSelect").disabled = event.target.checked;
-    } else {
-      document.getElementById("birthStateSelect").disabled = true;
-      document.getElementById("birthCitySelect").disabled = false;
-    }
+      user_avatar = user_metadata;
+    };
   } else {
-    document.getElementById("birthStateSelect").disabled = true;
-    document.getElementById("birthCitySelect").disabled = true;
+    user_avatar = 'some_default_image'
   }
-  if (stateArray_Lowercase.includes(document.getElementById("birthStateSelect").value.toLowerCase())) {
-  //if (stateArray.includes(event.target.value)) {
-    document.getElementById("birthCitySelect").disabled = event.target.checked;
-    document.getElementById("cityList").innerHTML = "";
-  } else {
-    document.getElementById("birthCitySelect").disabled = true;
-  }
-  fetchCoordinates();
-  activateMintButton();
+  console.log('User Avatar: ', user_avatar);
+  return(user_avatar);
 }
 
-function handleCountryChange(event) {
-  console.log("Country: ", {value: event.target.value});
-  if (countryArray_Lowercase.length === 0) {
-    fetch(locationCSV)
-      .then(response => response.text())
-      .then(text => locationCSVtoArray(text));
-  }
-  if (countryArray_Lowercase.includes(event.target.value.toLowerCase())) {
-  //if (countryArray.includes(event.target.value)) {
-    //if (event.target.value === 'United States') {
-    if (event.target.value.toLowerCase() === 'united states') {
-      document.getElementById("birthStateSelect").disabled = false;
-    } else {
-      document.getElementById("birthStateSelect").disabled = true;
-      document.getElementById("birthCitySelect").disabled = false;
-      var cityList = document.getElementById("cityList");
-      cityList.innerHTML = "";
-      countryCityDict[event.target.value.toLowerCase()].forEach(item => {
-        let option = document.createElement('option');
-        option.value = item;   
-        cityList.appendChild(option);
-      });
-    }
-  } else {
-    document.getElementById("birthStateSelect").disabled = true;
-    document.getElementById("birthCitySelect").disabled = true;
-  }
-  activateMintButton();
-}
 
-function handleStateChange(event) {
-  console.log("State: ", {value: event.target.value});
-  if (stateArray_Lowercase.includes(event.target.value.toLowerCase())) {
-  //if (stateArray.includes(event.target.value)) {
-    var cityList = document.getElementById("cityList");
-    document.getElementById("birthCitySelect").disabled = false;
-    cityList.innerHTML = "";
-    stateCityDict[event.target.value.toLowerCase()].forEach(item => {
-      let option = document.createElement('option');
-      option.value = item;   
-      cityList.appendChild(option);
-    });
-  } else {
-    document.getElementById("birthCitySelect").disabled = true;
-  }
-  activateMintButton();
-}
 
-function handleCityChange(event) {
-  console.log("City: ", {value: event.target.value});
-  if (cityArray_ALL_Lowercase.includes(event.target.value.toLowerCase())) {
-  //if (cityArray_ALL.includes(event.target.value)) {
-    fetchCoordinates();
-  }
-  activateMintButton();
-}
-
-function fetchCoordinates() {
-  // If "Don't Know" is checked for birth location, the highest population city in the user's current time zone is used
-  if (document.getElementById("birthLocationUnknown").checked) {
-    const dateObject = new Date();
-    var UTCoffset = dateObject.toString().split('GMT')[1].split(' (')[0];
-    console.log('User UTC Offset: ', UTCoffset);
-    if (!(UTCoffset in populousLocationsByTimeZone)) {
-      UTCoffset = UTCoffset[0] + UTCoffset[1] + UTCoffset[2] + '00';
-    }
-    birthCountry = populousLocationsByTimeZone[UTCoffset]['Country'];
-    birthState = populousLocationsByTimeZone[UTCoffset]['State'];
-    birthCity = populousLocationsByTimeZone[UTCoffset]['City'];
-    console.log('User Location Guess: ', birthCountry + ', ' + birthState + ', ' + birthCity);
-  } else {
-    birthCountry = document.getElementById("birthCountrySelect").value;
-    birthState = document.getElementById("birthStateSelect").value;
-    birthCity = document.getElementById("birthCitySelect").value;
-  }
-  // Pulls the latitude and longitude from the coordinateDict_Lowercase dictionary
-  if (birthCountry.toLowerCase() === 'united states') {
-    birthCoordinates = coordinateDict_Lowercase[birthCountry.toLowerCase() + ', ' + birthState.toLowerCase() + ', ' + birthCity.toLowerCase()];
-  } else {
-    birthCoordinates = coordinateDict_Lowercase[birthCountry.toLowerCase() + ', ' + birthCity.toLowerCase()];
-  }
-  console.log(birthCoordinates);
-  return birthCoordinates;
-}
-
-const populousLocationsByTimeZone = {'-1100': {'Abbreviation': 'SST',
-                                               'Country': 'Pago Pago',
-                                               'State': '',
-                                               'City': 'American Samoa'},
-                                     '-1000': {'Abbreviation': 'HST',
-                                               'Country': 'United States',
-                                               'State': 'Hawaii',
-                                               'City': 'Honolulu'}, 
-                                     '-0900': {'Abbreviation': 'AKST',
-                                               'Country': 'United States',
-                                               'State': 'Alaska',
-                                               'City': 'Anchorage'},
-                                     '-0800': {'Abbreviation': 'PST',
-                                               'Country': 'United States',
-                                               'State': 'California',
-                                               'City': 'Los Angeles'}, 
-                                     '-0700': {'Abbreviation': 'MST',
-                                               'Country': 'United States',
-                                               'State': 'Arizona',
-                                               'City': 'Phoenix'},
-                                     '-0600': {'Abbreviation': 'CST',
-                                               'Country': 'United States',
-                                               'State': 'Illinois',
-                                               'City': 'Chicago'}, 
-                                     '-0500': {'Abbreviation': 'EST',
-                                               'Country': 'United States',
-                                               'State': 'New York',
-                                               'City': 'New York'},
-                                     '-0400': {'Abbreviation': 'AST',
-                                               'Country': 'Brazil',
-                                               'State': '',
-                                               'City': 'Manaus'}, 
-                                     '-0300': {'Abbreviation': 'NST',
-                                               'Country': 'Canada',
-                                               'State': '',
-                                               'City': "St. John's"},
-                                     '-0200': {'Abbreviation': 'BRST',
-                                               'Country': 'Brazil',
-                                               'State': '',
-                                               'City': 'Sao Paulo'}, 
-                                     '-0100': {'Abbreviation': 'EGT',
-                                               'Country': 'Cabo Verde',
-                                               'State': '',
-                                               'City': 'Praia'},
-                                     '+0000': {'Abbreviation': 'UTC',
-                                               'Country': 'United Kingdom',
-                                               'State': '',
-                                               'City': 'London'}, 
-                                     '+0100': {'Abbreviation': 'WAT',
-                                               'Country': 'Nigeria',
-                                               'State': '',
-                                               'City': 'Lagos'},
-                                     '+0200': {'Abbreviation': 'CAT',
-                                               'Country': 'Egypt',
-                                               'State': '',
-                                               'City': 'Cairo'}, 
-                                     '+0300': {'Abbreviation': 'MSK',
-                                               'Country': 'Russia',
-                                               'State': '',
-                                               'City': 'Moscow'},
-                                     '+0400': {'Abbreviation': 'AZT',
-                                               'Country': 'Azerbaijan',
-                                               'State': '',
-                                               'City': 'Baku'}, 
-                                     '+0500': {'Abbreviation': 'PKT',
-                                               'Country': 'Pakistan',
-                                               'State': '',
-                                               'City': 'Karachi'},
-                                     '+0600': {'Abbreviation': 'BST',
-                                               'Country': 'Bangladesh',
-                                               'State': '',
-                                               'City': 'Dhaka'}, 
-                                     '+0700': {'Abbreviation': 'WIB',
-                                               'Country': 'Indonesia',
-                                               'State': '',
-                                               'City': 'Jakarta'},
-                                     '+0800': {'Abbreviation': 'HKT',
-                                               'Country': 'China',
-                                               'State': '',
-                                               'City': 'Shanghai'}, 
-                                     '+0900': {'Abbreviation': 'JST',
-                                               'Country': 'Japan',
-                                               'State': '',
-                                               'City': 'Tokyo'},
-                                     '+1000': {'Abbreviation': 'AET',
-                                               'Country': 'Australia',
-                                               'State': '',
-                                               'City': 'Brisbane'}, 
-                                     '+1100': {'Abbreviation': 'AEDT',
-                                               'Country': 'Australia',
-                                               'State': '',
-                                               'City': 'Sydney'},
-                                     '+1200': {'Abbreviation': 'NZST',
-                                               'Country': 'New Zealand',
-                                               'State': '',
-                                               'City': 'Auckland'}};
-
-var locationsArray;
-var countryArray = [];
-var countryArray_Lowercase = [];
-var countryCityDict = {};
-var stateArray = [];
-var stateArray_Lowercase = [];
-var stateCityDict = {};
-var cityArray = [];
-var cityArray_ALL = [];
-var cityArray_ALL_Lowercase = [];
-var coordinateDict = {};
-var coordinateDict_Lowercase = {};
-
-var birthHour, birthMinute, birthCountry, birthState, birthCity;
-var birthCoordinates;
-
-fetch(locationCSV)
-  .then(response => response.text())
-  .then(text => locationCSVtoArray(text));
-
-function locationCSVtoArray(str, delimiter = ",") {
-  var countryList = document.getElementById('countryList');
-  var stateList = document.getElementById('stateList');
-  var cityList = document.getElementById('cityList');
-  if (countryList.options.length === 0 || countryArray.length === 0) {
-    const headers = str.slice(0, str.indexOf("\n")).split(delimiter);
-    const rows = str.slice(str.indexOf("\n") + 1).split("\n");
-    var currentCountry = '';
-    var currentState = '';
-    locationsArray = rows.map(function (row) {
-      const values = row.split(delimiter);
-      const el = headers.reduce(function (object, header, index) {
-        object[header] = values[index];
-        return object;
-      }, {}); 
-      if (currentCountry !== el['Country']) {
-        if (currentCountry !== '') {
-          countryArray.push(currentCountry);
-          countryArray_Lowercase.push(currentCountry.toLowerCase());
-        }
-        if (currentCountry !== 'United States' && currentCountry !== '') {
-          countryCityDict[currentCountry.toLowerCase()] = cityArray;
-        } else if (currentCountry === 'United States') {
-          stateArray.push(currentState);
-          stateArray_Lowercase.push(currentState.toLowerCase());
-          stateCityDict[currentState.toLowerCase()] = cityArray;
-        }
-        currentCountry = el['Country'];
-        cityArray = [];
-      }
-      if (currentCountry === 'United States') {
-        if (currentState !== el['State']) {
-          if (currentState !== '') {
-            stateArray.push(currentState);
-            stateArray_Lowercase.push(currentState.toLowerCase());
-            stateCityDict[currentState.toLowerCase()] = cityArray;
-          }
-          cityArray = [];
-          currentState = el['State'];
-        }
-      }
-      if (currentCountry !== '') {
-        if (currentCountry === 'United States') {
-          coordinateDict[currentCountry + ', ' + currentState + ', ' + el['City']] = {'Latitude': el['Latitude'], 
-                                                                                      'Longitude': el['Longitude']}
-          coordinateDict_Lowercase[currentCountry.toLowerCase() + ', ' + currentState.toLowerCase() + ', ' + el['City'].toLowerCase()] = {'Latitude': el['Latitude'], 
-                                                                                                                                          'Longitude': el['Longitude']}                                                                                        
-        } else {
-          coordinateDict[currentCountry + ', ' + el['City']] = {'Latitude': el['Latitude'], 
-                                                                'Longitude': el['Longitude']}
-          coordinateDict_Lowercase[currentCountry.toLowerCase() + ', ' + el['City'].toLowerCase()] = {'Latitude': el['Latitude'], 
-                                                                                                      'Longitude': el['Longitude']}
-        }
-      }
-      if (el['City'] !== undefined) {
-        cityArray.push(el['City']);
-        cityArray_ALL.push(el['City']);
-        cityArray_ALL_Lowercase.push(el['City'].toLowerCase());
-      }
-      return el;
-    });
-    if (countryList.options.length === 0) {
-      countryArray.forEach(item => {
-        let option = document.createElement('option');
-        option.value = item;   
-        countryList.appendChild(option);
-      });
-    }
-    if (stateList.options.length === 0) {
-      stateArray.forEach(item => {
-        let option = document.createElement('option');
-        option.value = item;   
-        stateList.appendChild(option);
-      });
-    }
-    if (cityList.options.length === 0) {
-      cityArray_ALL.forEach(item => {
-        let option = document.createElement('option');
-        option.value = item;   
-        cityList.appendChild(option);
-      });
-    }
-    console.log("Country Array Length: ", countryArray.length);
-    return locationsArray;
-  }
-}
 
 return (
   <div className='mintgui'>
-    {/* <div className='navbarMobile'>
-      <div className='navbarCenterIcon'>
-        <div className='navbarMobileTopRight '>MobileLeftTitle</div>
+    <div className='mintGUIBoxTitle'>
+      <span className='mintGUIBoxTitle'>Pick Your Starter</span>
+    </div>
+    <div className='mintGUIBoxSubTitle'></div>
+    {/* <div className='mintGUIMobile'>
+      <div className='mintGUICenterIcon'>
+        <div className='mintGUIMobileTopRight '>MobileLeftTitle</div>
       </div>
     </div>
-    <div className='navbarMobileButton'>
+    <div className='mintGUIMobileButton'>
       <MobileMenu className={Mobile ? 'Mobile' : 'Mobile'} onClick={HandleMobileMenu} />
-      <div className={Mobile ? 'navbarMobileContainerActive' : 'navbarMobileContainer'}>
-        <div className={Mobile ? 'navbarMenu active' : 'navbarMenu'}>
-          <div className='navbarMenuContainer'>
-            <div className='navbarMobileTop'>
-              <div className='navbarMobileTopRight menuOpen'>MobileMenuText</div>
-              <div className='navbarMobileTopLeft'>
+      <div className={Mobile ? 'mintGUIMobileContainerActive' : 'mintGUIMobileContainer'}>
+        <div className={Mobile ? 'mintGUIMenu active' : 'mintGUIMenu'}>
+          <div className='mintGUIMenuContainer'>
+            <div className='mintGUIMobileTop'>
+              <div className='mintGUIMobileTopRight menuOpen'>MobileMenuText</div>
+              <div className='mintGUIMobileTopLeft'>
                 <Close className='CloseIcon' onClick={HandleMobileMenu} />
               </div>
             </div>
-            <div className='navbarMobileMain'>
-              <div className='navbarCenterLink opacity7'>MobileMenuMiddleText</div>
-              <div className='navbarCenterLink navbarRightButton'>MobileMenuButton</div>
+            <div className='mintGUIMobileMain'>
+              <div className='mintGUICenterLink opacity7'>MobileMenuMiddleText</div>
+              <div className='mintGUICenterLink mintGUIRightButton'>MobileMenuButton</div>
             </div>
           </div>
         </div>
       </div>
     </div>*/}
-    <div>
-      <div className='navbarLogo SlideRightAnimation'>
-        <img src={logo} alt='' className='navbarBoxImage' />
-      </div>
-    </div>
-
-    <div className='navbarContainer SlideRightAnimation'>
-      {/*<div className='navbarLeft'>
-        <img src={header1} alt='' className='navbarBoxImage' />
+    <div className='mintGUIContainer SlideRightAnimation'>
+      {/*<div className='mintGUILeft'>
+        <img src={header1} alt='' className='mintGUIBoxImage' />
       </div>*/}
-      <div className='navbarCenter'>
-        <div className='navbarBox'>
-          <div className='navbarBoxTitle'>
-            <span className='textHighlight'>Alchm</span>
+      <div className='mintGUICenter'>
+        <div className='mintGUIBox'>
+          <div className='LMNTLButton' onClick={handleLMNTLClick}>
+            <img src={fireLMNTL} alt='Fire' id='Fire' className='mintButtonImage' />
           </div>
-          <div className='navbarBoxSubTitle'>Astrology NFTs unique to you.<br></br>Own Your Alchemy.</div>
-          <div className='birthInfoForm' id='birthInfoForm'>
-            <p className='birthInfoTitle' id='birthInfoTitle'>Mint Your Alchm Avatar</p>
-            <p className='birthInfoSubtitle' id='birthInfoSubtitle'>Enter your birth information below to<br></br>generate your custom Alchm NFT.</p>
-            <div className='birthdayInputContainer' id='birthdayInputContainer'>
-              <p className='birthdayTitle' id='birthdayTitle'>Birthday</p>                  
-                <select className='birthMonthSelect' id='birthMonthSelect' onChange={handleMonthChange}>
-                  <option value="selectMonth">Month</option>
-                  <option value="0">January</option>
-                  <option value="1">February</option>
-                  <option value="2">March</option>
-                  <option value="3">April</option>
-                  <option value="4">May</option>
-                  <option value="5">June</option>
-                  <option value="6">July</option>
-                  <option value="7">August</option>
-                  <option value="8">September</option>
-                  <option value="9">October</option>
-                  <option value="10">November</option>
-                  <option value="11">December</option>
-                </select>
-                <input className='birthDayEntry' id='birthDayEntry' placeholder="Day" type="number" onChange={handleDayChange} required min="1" max="31" minLength="1" maxLength="2"/>
-                <input className='birthYearEntry' id='birthYearEntry' placeholder="Year" type="number" onChange={handleYearChange} required min="0" max="2022" minLength="1" maxLength="4"/>
-            </div>
-            <div className='birthTimeInputContainer' id='birthTimeInputContainer'>
-              <span className='birthTimeTitle' id='birthTimeTitle'>Birth Time</span>
-              <span className='timeGuessText' id='timeGuessText'>(you can guess!)</span>
-              <br></br>
-                <input className="birthTimeUnknown" id="birthTimeUnknown" type="checkbox" onChange={handleTimeUnknown} />
-                  <label className="timeUnknownLabel" id="timeUnknownLabel">Don't Know</label>
-                <br></br>
-                <select className='birthHourSelect' id='birthHourSelect' onChange={handleHourChange}>
-                  <option value="12">12</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                  <option value="7">7</option>
-                  <option value="8">8</option>
-                  <option value="9">9</option>
-                  <option value="10">10</option>
-                  <option value="11">11</option>
-                </select>
-                <span className='colon' id='colon'>:</span>
-                <input className='birthMinuteEntry' id='birthMinuteEntry' placeholder="00" type="number" onChange={handleMinuteChange} required min="0" max="59" minLength="1" maxLength="2"/>
-                <select className='birthAMPMSelect' id='birthAMPMSelect' onChange={handleAMPMChange}>
-                  <option value="AM">AM</option>
-                  <option value="PM">PM</option>
-                </select>
-            </div>
-            <div className='birthLocationInputContainer' id='birthLocationInputContainer'>
-              <span className='birthLocationTitle' id='birthLocationTitle'>Birth Location</span>
-              <span className='locationGuessText' id='locationGuessText'>(you can guess!)</span>
-              <br></br>
-                <input className="birthLocationUnknown" id="birthLocationUnknown" type="checkbox" onChange={handleLocationUnknown} />
-                  <label className="locationUnknownLabel" id="locationUnknownLabel">Don't Know</label>
-                <br></br>
-                <input placeholder="Country" list="countryList" className='birthCountrySelect' id='birthCountrySelect' onChange={handleCountryChange}/>
-                  <datalist id="countryList"></datalist>
-                <input placeholder="State" list="stateList" disabled="{true}" className='birthStateSelect' id='birthStateSelect' onChange={handleStateChange}/>
-                  <datalist id="stateList"></datalist>
-                <input placeholder="City" list="cityList" disabled="{true}" className='birthCitySelect' id='birthCitySelect' onChange={handleCityChange}/>
-                  <datalist id="cityList"></datalist>
-            </div>
-            <span className="validityMessage" id="validityMessage"/>
+          <div className='LMNTLButton' onClick={handleLMNTLClick}>
+            <img src={waterLMNTL} alt='Water' id='Water' className='mintButtonImage' />
           </div>
-          <div id="mintButton" className='mintButton' onClick={handleMintClick}>{(isConnected) ? 'MINT NOW' : 'CONNECT WALLET'}</div>
-          <a className='openSeaLink'
-            id='openSeaLink'
-            href='#'
-            target="_blank"
-            rel="noreferrer">
-            {(isMinted) ? 'View on OpenSea ->' : ''}
-          </a>
+          <div className='LMNTLButton' onClick={handleLMNTLClick}>
+            <img src={earthLMNTL} alt='Earth' id='Earth' className='mintButtonImage' />
+          </div>
+          <div className='LMNTLButton' onClick={handleLMNTLClick}>
+            <img src={airLMNTL} alt='Air' id='Air' className='mintButtonImage' />
+          </div>
+        </div>
+        <div className='mintButtonBottom' id='mintButtonBottom'>
+          <img className='mintButtonBottomImage' id='mintButtonBottomImage' src={mintButtonBottomImage} alt='Mint LMNTL' />
+          <div id="mintButtonBottomText" className='mintButtonBottomText' onClick={handleMintClick}>{(isConnected) ? 'Select LMNTL' : 'Connect Wallet'}</div>
         </div>
       </div>
-    </div>
-    <div id="testContainer" className="testContainer" style={{display: test_button_display, width:"95%", color:"#ffffff", backgroundColor:"#000000", padding:"2.5%"}}>
-      <div id="testContainerTitle" className="testContainerTitle" style={{fontSize:50}}>TEST AREA</div>
-      <div className="submitButtons" id="submitButtons">
-        <input value="Use Current Input" className="submitButton1" id="submitButton1" type="submit" style={{fontSize:18, marginRight:20}} onClick={handleSubmitClick}/>
-        <input value="Use Evan's Info" className="submitButton2" id="submitButton2" type="submit" style={{fontSize:18, marginRight:20}} onClick={handleSubmitClick}/>
-        <input value="Use Greg's Info" className="submitButton3" id="submitButton3" type="submit" style={{fontSize:18}} onClick={handleSubmitClick}/>
-      </div>
-      <div>____________________________________________________________________</div>
-      <div style={{fontSize:30}}>Alchm Info</div>
-      <div id="alchmInfo" className="alchmInfo" style={{fontSize:18}}>NONE</div>
     </div>
   </div>
 )
 }
 
-
-
-//////////
-// Origin
-//////////
-// This class automatically derives the local timezone from latitude/longitude coordinates
-// and calculates UTC time with respect to timezone and historical daylight savings time.
-// Only works for C.E. date (> 0).
-/////////
-// * int year: value >= 0 C.E.
-// * int month: (0 = january ...11 = december)
-// * int date: (1...31)
-// * int hours = local time - hours value (0...23)
-// * int minute = local time - minute value (0...59)
-// * float latitude = latitude in decimal format (-90.00...90.00)
-// * float longitude = longitude in decimal format (-180.00...180.00)
-
-// December 1st, 2020 - 430pm
 
 export default MintGUI

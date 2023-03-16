@@ -35,12 +35,6 @@ let contractAddress = '0xA055CD98B0b4f09bb96ba43BE64963BdF11783e1';
 //let metadataURI = 'https://gateway.pinata.cloud/ipfs/QmeDnUfLX7WKufRgc2b6GMb9uVRV5DEFwd9Lpr1QwjLfPc';
 let network = 'Goerli';
 
-//E~ Added for creating OpenSea link
-var openSeaPrefixes = {
-  Mainnet: 'https://opensea.io/assets/ethereum/',
-  Goerli: 'https://testnets.opensea.io/assets/goerli/'
-}
-let openSeaPrefix = openSeaPrefixes[network];
 
 var mobile = false;
 if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
@@ -689,9 +683,6 @@ async function mintNFT() {
   document.getElementById('mintButton').textContent = "MINT SUCCESS!"
   const tokenID = parseInt(transactionReceipt.logs[0].topics[3], 16);
   console.log("Token ID: ", tokenID);
-  document.getElementById('openSeaLink').style.visibility = 'visible';
-  //document.getElementById('openSeaLink').style.marginBottom = '-60px';
-  document.getElementById('openSeaLink').href = openSeaPrefix + contractAddress + '/' + tokenID.toString();
 }
 
 
@@ -1233,13 +1224,6 @@ return (
             <span className="validityMessage" id="validityMessage"/>
           </div>
           <div id="mintButton" className='mintButton' onClick={handleButtonClick}>{(isConnected) ? 'MINT NOW' : 'CONNECT WALLET'}</div>
-          <a className='openSeaLink'
-            id='openSeaLink'
-            href='#'
-            target="_blank"
-            rel="noreferrer">
-            {(isMinted) ? 'View on OpenSea ->' : ''}
-          </a>
         </div>
       </div>
       {/*<div className='navbarRight'>

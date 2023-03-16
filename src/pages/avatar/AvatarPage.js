@@ -1,5 +1,5 @@
 import React from 'react'
-import AvatarStats from '../../components/avatarstats/AvatarStats'
+import AvatarInfo from '../../components/avatarinfo/AvatarInfo'
 
 
 import './avatarpage.css'
@@ -7,7 +7,7 @@ import './avatarpage.css'
 const AvatarPage = () => {
   return (
     <div className='avatarpage'>
-      <AvatarStats />
+      <AvatarInfo />
     </div>
   )
 }

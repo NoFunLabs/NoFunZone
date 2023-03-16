@@ -1,22 +1,25 @@
 import React from 'react'
-import About from '../../components/about/About'
+//import About from '../../components/about/About'
 import Animation from '../../components/animation/Animation'
-import Roadmap from '../../components/roadmap/Roadmap'
-import Team from '../../components/team/Team'
-import FAQ from '../../components/faq/FAQ'
+//import Roadmap from '../../components/roadmap/Roadmap'
+//import Team from '../../components/team/Team'
+//import FAQ from '../../components/faq/FAQ'
 
-import MintGUI from '../../components/mintgui/MintGUI'
+
+import Banner from '../../components/banner/Banner'
+import PageDescription from '../../components/pagedescription/PageDescription'
+import GetStarted from '../../components/getstarted/GetStarted'
+import EvolutionDescription from '../../components/evolutiondescription/EvolutionDescription'
 
 import './main.css'
 
 const Main = () => {
   return (
     <div className='main'>
-      <MintGUI />
-      <About />
-      <Roadmap />
-      <Team />
-      <FAQ />
+      <Banner />
+      <PageDescription />
+      <GetStarted />
+      <EvolutionDescription />
       <Animation />
     </div>
   )
