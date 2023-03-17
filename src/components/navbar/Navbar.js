@@ -1925,22 +1925,24 @@ async function connectWallet() {
   // Prompt user for account connections
   count++;
   console.log(count);
-  await provider.send("eth_requestAccounts", []);
-  count++;
-  console.log(count);
-  signer = provider.getSigner();
-  count++;
-  console.log(count);
-  console.log(signer);
-  setAddress( await signer.getAddress() );
-  count++;
-  console.log(count);
-  let balance = await signer.getBalance();
-  count++;
-  console.log(count);
-  console.log(await ethers.utils.formatEther(balance));
-  count++;
-  console.log(count);
+  if (provider) {
+    await provider.send("eth_requestAccounts", []);
+    count++;
+    console.log(count);
+    signer = provider.getSigner();
+    count++;
+    console.log(count);
+    console.log(signer);
+    setAddress( await signer.getAddress() );
+    count++;
+    console.log(count);
+    let balance = await signer.getBalance();
+    count++;
+    console.log(count);
+    console.log(await ethers.utils.formatEther(balance));
+    count++;
+    console.log(count);
+  }
 }
 
 
