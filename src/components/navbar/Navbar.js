@@ -2058,14 +2058,14 @@ async function setAvatarURI(user_metadata) {
 
 
 // Recently added for user_icon
-var onLoadExecuted = false;
+/*var onLoadExecuted = false;
 if (!onLoadExecuted) {
   onLoadExecuted = true;
   if (!isConnected) {
     connectWallet();
     updateUserStats();
   };
-};
+};*/
 
 var user_icon = false;
 
