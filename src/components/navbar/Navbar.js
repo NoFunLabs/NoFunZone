@@ -1926,7 +1926,14 @@ async function connectWallet() {
   // Prompt user for account connections
   count++;
   console.log(count);
-  if (provider) {
+  console.log(provider);
+  console.log(provider._network);
+  while (!provider._network || count > 5) {
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    await pause(1000);
+    count ++;
+  }
+  if (provider._network) {
     await provider.send("eth_requestAccounts", []);
     count++;
     console.log(count);

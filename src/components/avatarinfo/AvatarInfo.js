@@ -1905,20 +1905,38 @@ function handleMintClick(event) {
 }
 
 async function connectWallet() {
+  console.log('A');
+  var count = 0;
+  count++;
+  console.log(count);
   provider = new ethers.providers.Web3Provider(window.ethereum);
   // Prompt user for account connections
-  await provider.send("eth_requestAccounts", []);
-  signer = provider.getSigner();
-  console.log(signer);
-  if (setAddress( await signer.getAddress() )) {
+  count++;
+  console.log(count);
+  console.log(provider);
+  console.log(provider._network);
+  while (!provider._network || count > 5) {
+    provider = new ethers.providers.Web3Provider(window.ethereum);
+    await pause(1000);
+    count ++;
+  }
+  if (provider._network) {
+    await provider.send("eth_requestAccounts", []);
+    count++;
+    console.log(count);
+    signer = provider.getSigner();
+    count++;
+    console.log(count);
+    console.log(signer);
+    setAddress( await signer.getAddress() );
+    count++;
+    console.log(count);
     let balance = await signer.getBalance();
+    count++;
+    console.log(count);
     console.log(await ethers.utils.formatEther(balance));
-    user_metadata = await getUserMetadata();
-    console.log('User Metadata: ', user_metadata);
-    setAvatarURI(user_metadata);
-    document.getElementById('userAvatar').src = user_avatar;
-    user_stats = await updateUserStats();
-    updateWalletButtons();
+    count++;
+    console.log(count);
   }
 }
 
