@@ -1,58 +1,34 @@
 import React, { useState } from 'react'
 
-//import { ReactComponent as MobileMenu } from '../../icons/MobileMenu.svg'
-//import { ReactComponent as Close } from '../../icons/Close.svg'
-//import { ReactComponent as Logo } from '../../icons/AlchmLogo.svg'
-
-import logo from '../../image/logo.png'
-
-import walletButton from '../../image/button_4x1.png'
-
-//import header1 from '../../image/header1.png'
-//import header2 from '../../image/header2.png'
-
 import { FormatTypes, Interface } from "@ethersproject/abi";
 
-import './navbar.css'
-
-// Recenty added for user_icon
-
-import fire_1_icon from '../../image/LMNTLfire1.png';
-import fire_2_icon from '../../image/LMNTLfire2-icon.png';
-import water_1_icon from '../../image/LMNTLwater1.png';
-import water_2_icon from '../../image/LMNTLwater2-icon.png';
-import air_1_icon from '../../image/LMNTLair1.png';
-import air_2_icon from '../../image/LMNTLair2-icon.png';
-import earth_1_icon from '../../image/LMNTLearth1.png';
-import earth_2_icon from '../../image/LMNTLearth2-icon.png';
-
+import './smartcontractoperator.css';
 
 const { ethers } = require("ethers");
+const { utils } = require('ethers').utils;
+//const { BigNumber } = require('ethers').BigNumber;
+
+const default_network = 'Goerli';
+var network = default_network;
+
+const openSeaLinkDelay = 8;
 
 let address, signer, provider;
+var mintButtonActive = true;
 
-let network = 'Goerli';
+var user_avatar = "";
+var user_metadata = "";
+var user_tokenID = "";
 
-var onLoadExecuted = false;
-
-var mobile = false;
-if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-  console.log("Mobile device detected");
-  mobile = true;
-};
-
-//Recently Added
-
-let contractName = 'LMNTL';
-
+// *Update the contract address list based on your smart contract
 let contractAddressList = {'Mainnet': '',
                            'Goerli': '0xE914eCA2a17f7d402a5095fF44c92ECCCD26F912',
                            'Hyperspace': '0xB4fECac2F5BdEc2eD15547cF857464c8691b9849'}
 let contractAddress = contractAddressList[network];
 
+// *Update JSON ABI list with your smart contract's latest JSON ABI
 let jsonAbiList = {'Mainnet': `[]`,
                    'Goerli': `[
-                    
                     {
                       "inputs": [],
                       "stateMutability": "nonpayable",
@@ -970,7 +946,6 @@ let jsonAbiList = {'Mainnet': `[]`,
                       "stateMutability": "view",
                       "type": "function"
                     }
-                   
                    ]`,
                    'Hyperspace': `[
                     {
@@ -1818,35 +1793,7 @@ let jsonAbiList = {'Mainnet': `[]`,
                       "type": "function"
                     }
                   ]`}
-
 const jsonAbi = jsonAbiList[network];
-
-
-//Recently Added
-
-var user_avatar = "";
-var user_element = "";
-var user_metadata = "";
-var user_tokenID = "";
-var user_primary_stats = [];
-var user_stats = {'ID': 0,
-                  'Level': 0,
-                  'EXP': 0,
-                  'Element': '',
-                  'Fire': 0,
-                  'Water': 0,
-                  'Air': 0,
-                  'Earth': 0,
-                  'Charisma': 0,
-                  'Creativity': 0,
-                  'Cunning': 0,
-                  'Patience': 0};
-var user_stats_list = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-const elements = {0: 'Fire',
-                1: 'Water',
-                2: 'Air',
-                3: 'Earth'};
 
 const ipfs_prefixes = {
   Pinata: 'https://gateway.pinata.cloud/ipfs/',
@@ -1856,11 +1803,13 @@ const ipfs_prefixes = {
 const network_ipfs_dict = {'Mainnet': 'Pinata',
                            'Goerli': 'Pinata',
                            'Hyperspace': 'Filecoin'};
-var network_default_ipfs = network_ipfs_dict[network]
+var network_default_ipfs = network_ipfs_dict[network];
 var ipfs_prefix = ipfs_prefixes[network_default_ipfs];
 
 var image_uris, base_image_uri;
 var base_image_uri = '';
+
+// *Update the IPFS URIs based on your file storage
 if (network_default_ipfs === 'Filecoin') {
   image_uris = {'Fire': {1:'https://ipfs.io/ipfs/bafybeid2oy2tbsig674eh7n4kp4gqribvpr6ajodxokfhyzftl3il7troy/LMNTLfire1.png', 
                                2:'https://ipfs.io/ipfs/bafybeiaejbgk6zlz43r4fgubbxv5m3nveb23wt2mtywwqhaoj627vpf7xi/LMNTLfire2.png'},
@@ -1882,15 +1831,14 @@ if (network_default_ipfs === 'Filecoin') {
                           2:'/LMNTLearth2.png'}}
 }
 
-
 function capitalize(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-const Navbar = () => {
+const SmartContractOperator = () => {
 
 const [isConnected, toggleConnected] = useState(0);
-const [isMinted, toggleMinted] = useState(0);
+const [isMinted, toggleMinted] = useState(0); 
 
 const iface = new Interface(jsonAbi);
 iface.format(FormatTypes.full);
@@ -1900,161 +1848,179 @@ function pause(time) {
   return new Promise(resolve => setTimeout(resolve, time));
 }
 
-
 function setAddress(ethaddy) {
     address = ethaddy;
     if (address != null) {  toggleConnected ( !isConnected ); }
     console.log("Account:", address);
     //alert("Connected: " + address);
+    updateWalletButtons();
 }
 
-function handleConnectClick() {
-  if (!isConnected) {connectWallet()}
-  else {
-    if (address) {
-      window.location.href = window.location['origin'] + '/avatar';
+
+function handleMintClick(event) {
+  if (mintButtonActive) {
+    if (!isConnected) {connectWallet()}
+      else if (element_choice) {
+        {mintNFT(element_choice);
+      }
     }
+  } else {
+    window.location.href = window.location['origin'] + '/avatar';
   }
+  updateWalletButtons();
 }
 
 async function connectWallet() {
-  var count = 0;
-  count++;
-  console.log(count);
   provider = new ethers.providers.Web3Provider(window.ethereum);
   // Prompt user for account connections
-  count++;
-  console.log(count);
   await provider.send("eth_requestAccounts", []);
-  count++;
-  console.log(count);
   signer = provider.getSigner();
-  count++;
-  console.log(count);
   console.log(signer);
   setAddress( await signer.getAddress() );
-  count++;
-  console.log(count);
   let balance = await signer.getBalance();
-  count++;
-  console.log(count);
   console.log(await ethers.utils.formatEther(balance));
-  count++;
-  console.log(count);
+  user_metadata = await getUserMetadata();
+  console.log('User Metadata: ', user_metadata);
+  setAvatarURI(user_metadata);
+  user_stats = await getUserStats();
+  updateWalletButtons();
 }
 
 
+async function mintNFT(element) {
+  const nftContract = new ethers.Contract(contractAddress, iface,signer);
+  const mintButtonBottom = document.getElementById('mintButtonBottomText');
+
+  var transactionInfo;
+  console.log(element);
+  var imageURI = image_uris[element][1];
+  setAvatarURI(imageURI);
+  if (element === 'Fire') {
+    transactionInfo = await nftContract.mint(0, user_avatar);
+  } else if (element === 'Water') {
+    transactionInfo = await nftContract.mint(1, user_avatar);
+  } else if (element === 'Air') {
+    transactionInfo = await nftContract.mint(2, user_avatar);
+  } else if (element === 'Earth') {
+    transactionInfo = await nftContract.mint(3, user_avatar);
+  }  
+  toggleMinted ( !isMinted );
+  console.log("Transaction info: ", transactionInfo);
+  var transactionHash = transactionInfo.hash;
+  console.log("Transaction hash: ", transactionHash);
+  var transactionReceipt = await provider.getTransactionReceipt(transactionHash);
+  console.log("Immediate transaction receipt: ", transactionReceipt);
+  mintButtonBottom.textContent = "Minting";
+  var loop_count = 1;
+  while ( !transactionReceipt ) {
+    await pause(500);
+    if (loop_count > 3) {
+      mintButtonBottom.textContent = "Minting";
+      loop_count = 0;
+    } else {
+      mintButtonBottom.insertAdjacentText('beforeEnd', '.');
+    }
+    transactionReceipt = await provider.getTransactionReceipt(transactionHash);
+    loop_count+=1;
+  }
+  mintButtonActive = false;
+  console.log("Mined transaction receipt: ", transactionReceipt);
+  var wait_count = 0;
+  while ( wait_count < (2 * openSeaLinkDelay) ) {
+    await pause(500);
+    if (loop_count > 3) {
+      mintButtonBottom.textContent = "Minting";
+      loop_count = 0;
+    } else {
+      mintButtonBottom.insertAdjacentText('beforeEnd', '.');
+    }
+    loop_count+=1;
+    wait_count+=1;
+  }
+  mintButtonBottom.textContent = "View LMNTL!";
+  mintButtonBottom.href = window.location['origin'] + '/avatar';
+  const tokenID = parseInt(transactionReceipt.logs[0].topics[3], 10);
+  console.log("Token ID: ", tokenID);
+  console.log("Transaction Info: ", transactionInfo);
+  user_metadata = await getUserMetadata();
+  console.log("User Metadata: ", user_metadata);
+
+  user_avatar = await setAvatarURI(user_metadata);
+  user_stats = await getUserStats();
+  updateWalletButtons();
+}
+
+function handleLevelUpClick() {
+    if (evolveButtonActive) {
+      if (!isConnected) {connectWallet()}
+        else {levelUp();
+      }
+    } else {
+      window.location.href = window.location['origin'] + '/avatar';
+    }
+  }
+  
+  
+  async function levelUp() {
+    const contract = new ethers.Contract(contractAddress, jsonAbi, signer);
+    const previous_user_exp = user_stats['EXP'];
+    const evolveButton = document.getElementById('moduleTestEvolveButtonText');
+  
+    user_primary_stats = await contract.getUserPrimaryStats(address);
+    user_stats['Level'] = user_primary_stats[1];
+    console.log('User Primary Stats: ', user_primary_stats);
+    
+    var imageURI = image_uris[user_stats['Element']][(user_stats['Level'] % 2) + 1];
+    console.log('New Image URI: ', imageURI);
+  
+    const transactionInfo = await contract.levelUp(address, imageURI);
+  
+    console.log("Transaction info: ", transactionInfo);
+    var transactionHash = transactionInfo.hash;
+    console.log("Transaction hash: ", transactionHash);
+    var transactionReceipt = await provider.getTransactionReceipt(transactionHash);
+    console.log("Immediate transaction receipt: ", transactionReceipt);
+    evolveButton.textContent = "Evolving";
+    var loop_count = 1;
+    while ( !transactionReceipt ) {
+      await pause(500);
+      if (loop_count > 3) {
+        evolveButton.textContent = "Evolving";
+        loop_count = 0;
+      } else {
+        evolveButton.insertAdjacentText('beforeEnd', '.');
+      }
+      transactionReceipt = await provider.getTransactionReceipt(transactionHash);
+      loop_count+=1;
+    }
+  
+    evolveButtonActive = false;
+  
+    console.log("Mined transaction receipt: ", transactionReceipt);
+    console.log("Transaction Info: ", transactionInfo);
+    while (previous_user_exp === user_stats['EXP']) {
+      user_stats = await getUserStats();
+      pause(500);
+    }
+    evolveButton.textContent = "View LMNTL!";
+    evolveButton.href = window.location['origin'] + '/avatar';
+    user_metadata = await getUserMetadata();
+    console.log("User Metadata: ", user_metadata);
+    user_avatar = await setAvatarURI(user_metadata);
+    updateWalletButtons();
+  }
 
 
-const handleMint = () => {}
-const handleAbout = () => {}
-const handleRoadmap = () => {
-  var scroll = document.getElementsByClassName('roadmapBC')
-  window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop - 40 })
-}
-const handleTeam = () => {
-  var scroll = document.getElementsByClassName('teamAnchor')
-  window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop - 40 })
-}
-const handleFaq = () => {
-  var scroll = document.getElementsByClassName('faqScroll')
-  window.scroll({ behavior: 'smooth', top: scroll[0].offsetTop + 20 })
-}
 
-// Recently Added
+
+
 async function getUserMetadata() {
   const contract = new ethers.Contract(contractAddress, jsonAbi, provider);
   let userMetadata = await contract.getUserMetadata(address);
   return userMetadata;
 }
 
-async function updateUserStats() {
-  const contract = new ethers.Contract(contractAddress, jsonAbi, provider);
-  user_tokenID = await contract.getUserTokenID(address);
-  user_primary_stats = await contract.getUserPrimaryStats(address);
-  user_stats_list = await contract.getUserCurrentStats(address);
-  user_element = capitalize(user_primary_stats[0]);
-  
-  user_stats['ID'] = parseInt(user_tokenID, 10);
-  user_stats['Element'] = user_element;
-  user_stats['Level'] = parseInt(user_stats_list[0], 10);
-  user_stats['EXP'] = parseInt(user_stats_list[1], 10);
-  user_stats['Image URI'] = user_primary_stats[3];
-  user_stats['Fire'] = parseInt(user_stats_list[2], 10);
-  user_stats['Water'] = parseInt(user_stats_list[3], 10);
-  user_stats['Air'] = parseInt(user_stats_list[4], 10);
-  user_stats['Earth'] = parseInt(user_stats_list[5], 10);
-  user_stats['Charisma'] = parseInt(user_stats_list[6], 10);
-  user_stats['Creativity'] = parseInt(user_stats_list[7], 10);
-  user_stats['Cunning'] = parseInt(user_stats_list[8], 10);
-  user_stats['Patience'] = parseInt(user_stats_list[9], 10);
 
-
-  // Recently added for user_icon
-  console.log(user_element, user_stats['Level'] % 2);
-  user_icon = icon_dict[user_element][(2 - (user_stats['Level'] % 2))];
-  console.log("User Icon: ", user_icon);
-  const walletButtonImage = document.getElementById('navbarWalletButtonImage');
-  walletButtonImage.src = user_icon;
-  walletButtonImage.style.width = '12.5%';
-  walletButtonImage.style.color = "var(--color-nfzorange)";
-  walletButtonImage.style.border = 'solid';
-  walletButtonImage.style.borderWidth = '5px 5px 5px 5px';
-  walletButtonImage.style.borderRadius = '10px';
-  document.getElementById('navbarWalletButtonText').textContent = '';
-  
-  
-
-  console.log('User Stats: ', user_stats);
-  return user_stats;
-}
-
-
-async function levelUp() {
-  const contract = new ethers.Contract(contractAddress, jsonAbi, signer);
-  const previous_user_exp = user_stats['EXP'];
-
-  user_primary_stats = await contract.getUserPrimaryStats(address);
-  user_stats['Level'] = user_primary_stats[1];
-  console.log('User Primary Stats: ', user_primary_stats);
-  
-  var imageURI = image_uris[user_stats['Element']][(user_stats['Level'] % 2) + 1];
-  console.log('New Image URI: ', imageURI);
-
-  const transactionInfo = await contract.levelUp(address, imageURI);
-
-  console.log("Transaction info: ", transactionInfo);
-  var transactionHash = transactionInfo.hash;
-  console.log("Transaction hash: ", transactionHash);
-  var transactionReceipt = await provider.getTransactionReceipt(transactionHash);
-  console.log("Immediate transaction receipt: ", transactionReceipt);
-  document.getElementById('mintButton').textContent = "LEVELING"
-  var loop_count = 1;
-  while ( !transactionReceipt ) {
-    await pause(500);
-    if (loop_count > 3) {
-      document.getElementById('mintButton').textContent = "LEVELING"
-      loop_count = 0;
-    } else {
-      document.getElementById('mintButton').insertAdjacentText('beforeEnd', '.');
-    }
-    transactionReceipt = await provider.getTransactionReceipt(transactionHash);
-    loop_count+=1;
-  }
-
-
-  console.log("Mined transaction receipt: ", transactionReceipt);
-  document.getElementById('mintButton').textContent = "LEVEL UP!"
-  console.log("Transaction Info: ", transactionInfo);
-  while (previous_user_exp === user_stats['EXP']) {
-    user_stats = await updateUserStats();
-    pause(500);
-  }
-  user_metadata = await getUserMetadata();
-  console.log("User Metadata: ", user_metadata);
-  user_avatar = await setAvatarURI(user_metadata);
-  document.getElementById('userAvatar').src = user_avatar;
-}
 
 async function setAvatarURI(user_metadata) {
   if (user_metadata) {
@@ -2070,111 +2036,64 @@ async function setAvatarURI(user_metadata) {
   return(user_avatar);
 }
 
+function handleConnectClick() {
+    if (!isConnected) {
+      connectWallet()
+    }
+    updateWalletButtons();
+  }
+  
+function updateWalletButtons() {
+var openSeaLink = document.getElementById('avatarInfoOpenSeaLink');
+if (address) {
+    openSeaLink.style.boxShadow = '0 0 15px 5px #8cbaff';
+    openSeaLink.style.backgroundColor = 'var(--color-opensea)';
+    openSeaLink.textContent = 'VIEW ON OPENSEA';
+    openSeaLink.href = openSeaPrefix + contractAddress + '/' + user_stats['ID'].toString();
+    openSeaLink.target = '_blank';
+} else {
+    openSeaLink.style.boxShadow = '0 0 15px 5px #ffa411;';
+    openSeaLink.style.backgroundColor = '#F8700C';
+    openSeaLink.textContent = 'CONNECT WALLET';
+}
+}
 
-
-// Recently added for user_icon
 var onLoadExecuted = false;
 if (!onLoadExecuted) {
-  onLoadExecuted = true;
-  if (!isConnected) {
-    connectWallet();
-    updateUserStats();
-  };
+    onLoadExecuted = true;
+    if (!isConnected) {
+        connectWallet();
+    };
 };
-
-var user_icon = false;
-
-
-const icon_dict = {'Fire': {1: fire_1_icon, 
-                            2: fire_2_icon},
-                  'Water': {1: water_1_icon,
-                            2: water_2_icon},
-                  'Air':{1: air_1_icon,
-                         2: air_2_icon},
-                  'Earth': {1: earth_1_icon,
-                            2: earth_2_icon}}
-
-
 
 
 return (
-  <div className='navbar'>
-    {/* <div className='navbarMobile'>
-      <div className='navbarCenterIcon'>
-        <div className='navbarMobileTopRight '>MobileLeftTitle</div>
-      </div>
+  <div className='SmartContractOperator'>
+    <div className='SCObutton' id='SCObutton'>
+      <img className='SCObuttonImage' id='SCObuttonImage' src={mintButtonBottomImage} alt='Connect Wallet' />
+      <div id="SCObuttonText" className='SCObuttonText' onClick={handleConnectClick}>{(isConnected) ? 'Wallet Connected' : 'Connect Wallet'}</div>
     </div>
-    <div className='navbarMobileButton'>
-      <MobileMenu className={Mobile ? 'Mobile' : 'Mobile'} onClick={HandleMobileMenu} />
-      <div className={Mobile ? 'navbarMobileContainerActive' : 'navbarMobileContainer'}>
-        <div className={Mobile ? 'navbarMenu active' : 'navbarMenu'}>
-          <div className='navbarMenuContainer'>
-            <div className='navbarMobileTop'>
-              <div className='navbarMobileTopRight menuOpen'>MobileMenuText</div>
-              <div className='navbarMobileTopLeft'>
-                <Close className='CloseIcon' onClick={HandleMobileMenu} />
-              </div>
-            </div>
-            <div className='navbarMobileMain'>
-              <div className='navbarCenterLink opacity7'>MobileMenuMiddleText</div>
-              <div className='navbarCenterLink navbarRightButton'>MobileMenuButton</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>*/}
-    <div className='navbarContainer SlideRightAnimation'>
-      <div className='navbarLeft'>
-        <div id="navbarLogo" className='navbarLogo'>
-          <a href={window.location['origin']}>
-            <img className="navbarLogoImage" id="navbarLogoImage" src={logo} alt='Home' />
-          </a>
-        </div>
-      </div>
-      <div className='navbarCenter'>
-        {/*<div className='navbarLogo'>
-          <img src={logo} alt='' className='navbarBoxImage' />
-        </div>*/}
-        <div className='navbarButton' onClick={handleMint}>
-          <a href={window.location['origin'] + '/module0'}>
-            <div className='navbarButton1'>
-              Lessons
-            </div>
-          </a>
-        </div>
-        <div className='navbarButton' onClick={handleAbout}>
-          <a href={window.location['origin'] + '/avatar'}>
-            <div className='navbarButton2'>
-              Your NFTs
-            </div>
-          </a>
-        </div>
-        <div className='navbarButton' onClick={handleRoadmap}>
-          <div className='navbarButton3'>
-            About Us
-          </div>
-        </div>
-        <div className='navbarButton' onClick={handleTeam}>
-          <div className='navbarButton4'>
-            Blog
-          </div>
-        </div>
-        <div className='navbarButton' onClick={handleFaq}>
-          <div className='navbarButton5'>
-            Contact Us
-          </div>
-        </div>
-      </div>
-      <div className='navbarRight'>
-        <div id="navbarWalletButton" className='navbarWalletButton' onClick={handleConnectClick}>
-          <img id="navbarWalletButtonImage" className='navbarWalletButtonImage' src={walletButton} alt='Wallet Connect' />
-          <div id="navbarWalletButtonText" className='navbarWalletButtonText'>{(isConnected) ? 'Wallet Connected' : 'Connect Wallet'}</div>
-        </div>
-      </div>
+    <div className='SCObutton' id='SCObutton1'>
+      <a href='#' id="SCOopenSeaLink" className='SCOopenSeaLink' rel="noreferrer">
+        <img className='SCObuttonImage' id='SCObuttonImage' src={mintButtonBottomImage} alt='Mint NFT' />
+        <div id="SCObuttonText1" className='SCObuttonText' onClick={handleMintClick}>{(isConnected) ? 'Mint NFT' : 'Connect Wallet'}</div>
+      </a>
+    </div>
+    <div className='SCObutton' id='SCObutton2'>
+      <a href='#' id="SCOavatarLink" className='SCOavatarLink' rel="noreferrer">
+        <img className='SCObuttonImage' id='SCObuttonImage' src={mintButtonBottomImage} alt='Mint NFT' />
+        <div id="SCObuttonText2" className='SCObuttonText' onClick={handleMintClick}>{(isConnected) ? 'Mint NFT' : 'Connect Wallet'}</div>
+      </a>
+    </div>
+    <div className='SCObutton' id='SCObutton3'>
+      <a href='#' id="SCOavatarLink" className='SCOavatarLink' rel="noreferrer">
+        <img className='SCObuttonImage' id='SCObuttonImage' src={mintButtonBottomImage} alt='Level Up' />
+        <div id="SCObuttonText3" className='SCObuttonText' onClick={handleLevelUpClick}>{(isConnected) ? 'Level Up' : 'Connect Wallet'}</div>
+      </a>
     </div>
   </div>
 )
 }
 
 
-export default Navbar
+export default SmartContractOperator
