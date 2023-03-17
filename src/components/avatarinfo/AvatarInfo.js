@@ -1845,8 +1845,9 @@ const network_ipfs_dict = {'Mainnet': 'Pinata',
 var network_default_ipfs = network_ipfs_dict[network]
 var ipfs_prefix = ipfs_prefixes[network_default_ipfs];
 
-var image_uris, base_image_uri;
+var image_uris, metadata_URIs;
 var base_image_uri = '';
+var base_metadata_URI = '';
 if (network_default_ipfs === 'Filecoin') {
   image_uris = {'Fire': {1:'https://ipfs.io/ipfs/bafybeid2oy2tbsig674eh7n4kp4gqribvpr6ajodxokfhyzftl3il7troy/LMNTLfire1.png', 
                                2:'https://ipfs.io/ipfs/bafybeiaejbgk6zlz43r4fgubbxv5m3nveb23wt2mtywwqhaoj627vpf7xi/LMNTLfire2.png'},
@@ -1856,6 +1857,14 @@ if (network_default_ipfs === 'Filecoin') {
                              2:'https://ipfs.io/ipfs/bafybeihp5xj3ynypjsl2si2ve47bs4uydm6tvyxvljnbllyrobxom67hxa/LMNTLair2.png'},
                       'Earth': {1:'https://ipfs.io/ipfs/bafybeibh7cukho5d2i7gjtuophcw455wnzk5rvy5cp7dwva74izhwst46a/LMNTLearth1.png',
                                 2:'https://ipfs.io/ipfs/bafybeicnog62bhxyinwq6f43pkalkr26ahcj3fjpl3nizg5deaaz7cruxm/LMNTLearth2.png'}}
+  metadata_URIs = {'Fire': {1:'', 
+                               2:''},
+                      'Water': {1:'',
+                                2:''},
+                      'Air':{1:'',
+                             2:''},
+                      'Earth': {1:'',
+                                2:''}}
 } else if (network_default_ipfs === 'Pinata') {
   base_image_uri = 'QmPF4nrDbTnGk2UWduZDw2FCHZcF6HJicYDdsDAkEqJgH7';
   image_uris = {'Fire': {1:'/LMNTLfire1.png', 
@@ -1866,6 +1875,15 @@ if (network_default_ipfs === 'Filecoin') {
                        2:'/LMNTLair2.png'},
                 'Earth': {1:'/LMNTLearth1.png',
                           2:'/LMNTLearth2.png'}}
+  base_metadata_URI = 'QmcvaEQrzwiNjDZzJX1jBq5zDtvF9yc2Le6nyjquABEGmh';
+  image_uris = {'Fire': {1:'/LMNTLfire1.json', 
+                         2:'/LMNTLfire2.json'},
+                'Water': {1:'/LMNTLwater1.json',
+                          2:'/LMNTLwater2.json'},
+                'Air':{1:'/LMNTLair1.json',
+                       2:'/LMNTLair2.json'},
+                'Earth': {1:'/LMNTLearth1.json',
+                          2:'/LMNTLearth2.json'}}
 }
 
 function capitalize(string) {
@@ -1905,38 +1923,20 @@ function handleMintClick(event) {
 }
 
 async function connectWallet() {
-  var count = 0;
-  count++;
-  console.log(count);
   provider = new ethers.providers.Web3Provider(window.ethereum);
   // Prompt user for account connections
-  count++;
-  console.log(count);
-  console.log(provider);
-  console.log(provider._network);
-  while (!provider._network) {
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    await pause(1000);
-  }
-  if (provider._network) {
-    count++;
-    console.log(count);
-    await provider.send("eth_requestAccounts", []);
-    count++;
-    console.log(count);
-    signer = provider.getSigner();
-    count++;
-    console.log(count);
-    console.log(signer);
-    setAddress( await signer.getAddress() );
-    count++;
-    console.log(count);
+  await provider.send("eth_requestAccounts", []);
+  signer = provider.getSigner();
+  console.log(signer);
+  if (setAddress( await signer.getAddress() )) {
     let balance = await signer.getBalance();
-    count++;
-    console.log(count);
     console.log(await ethers.utils.formatEther(balance));
-    count++;
-    console.log(count);
+    user_metadata = await getUserMetadata();
+    console.log('User Metadata: ', user_metadata);
+    setAvatarURI(user_metadata);
+    document.getElementById('userAvatar').src = user_avatar;
+    user_stats = await updateUserStats();
+    updateWalletButtons();
   }
 }
 
@@ -2147,22 +2147,23 @@ function updateWalletButtons() {
   }
 }
 
-// Recently added for user_icon
 var onLoadExecuted = false;
-async function onLoad() {
-  console.log('q');
-  if (!onLoadExecuted) {
-    onLoadExecuted = true;
-    if (!isConnected) {
-      connectWallet();
-      while (!provider._network) {
-        await pause(1000);
-      }
-      updateUserStats();
-    };
+if (!onLoadExecuted) {
+  onLoadExecuted = true;
+  if (!isConnected) {
+    connectWallet();
   };
-}
-//onLoad();
+};
+
+
+var onLoadExecuted = false;
+if (!onLoadExecuted) {
+  onLoadExecuted = true;
+  if (!isConnected) {
+    connectWallet();
+    updateUserStats();
+  };
+};
 
 
 // Conditional Text Formatting

@@ -1918,39 +1918,14 @@ function handleConnectClick() {
 }
 
 async function connectWallet() {
-  var count = 0;
-  count++;
-  console.log(count);
   provider = new ethers.providers.Web3Provider(window.ethereum);
   // Prompt user for account connections
-  count++;
-  console.log(count);
-  console.log(provider);
-  console.log(provider._network);
-  while (!provider._network) {
-    provider = new ethers.providers.Web3Provider(window.ethereum);
-    await pause(1000);
-  }
-  if (provider._network) {
-    count++;
-    console.log(count);
-    await provider.send("eth_requestAccounts", []);
-    count++;
-    console.log(count);
-    signer = provider.getSigner();
-    count++;
-    console.log(count);
-    console.log(signer);
-    setAddress( await signer.getAddress() );
-    count++;
-    console.log(count);
-    let balance = await signer.getBalance();
-    count++;
-    console.log(count);
-    console.log(await ethers.utils.formatEther(balance));
-    count++;
-    console.log(count);
-  }
+  await provider.send("eth_requestAccounts", []);
+  signer = provider.getSigner();
+  console.log(signer);
+  setAddress( await signer.getAddress() );
+  let balance = await signer.getBalance();
+  console.log(await ethers.utils.formatEther(balance));
 }
 
 
@@ -2084,20 +2059,13 @@ async function setAvatarURI(user_metadata) {
 
 // Recently added for user_icon
 var onLoadExecuted = false;
-async function onLoad() {
-  if (!onLoadExecuted) {
-    onLoadExecuted = true;
-    if (!isConnected) {
-      connectWallet();
-      while (!provider._network) {
-        await pause(1000);
-      }
-      updateUserStats();
-    };
+if (!onLoadExecuted) {
+  onLoadExecuted = true;
+  if (!isConnected) {
+    connectWallet();
+    updateUserStats();
   };
-}
-//onLoad();
-
+};
 
 var user_icon = false;
 
