@@ -2147,23 +2147,22 @@ function updateWalletButtons() {
   }
 }
 
+// Recently added for user_icon
 var onLoadExecuted = false;
-if (!onLoadExecuted) {
-  onLoadExecuted = true;
-  if (!isConnected) {
-    connectWallet();
+async function onLoad() {
+  console.log('q');
+  if (!onLoadExecuted) {
+    onLoadExecuted = true;
+    if (!isConnected) {
+      connectWallet();
+      while (!provider._network) {
+        await pause(1000);
+      }
+      updateUserStats();
+    };
   };
-};
-
-
-var onLoadExecuted = false;
-if (!onLoadExecuted) {
-  onLoadExecuted = true;
-  if (!isConnected) {
-    connectWallet();
-    updateUserStats();
-  };
-};
+}
+onLoad();
 
 
 // Conditional Text Formatting
