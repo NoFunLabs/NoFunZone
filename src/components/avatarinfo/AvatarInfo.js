@@ -1905,7 +1905,6 @@ function handleMintClick(event) {
 }
 
 async function connectWallet() {
-  console.log('A');
   var count = 0;
   count++;
   console.log(count);
@@ -1915,12 +1914,13 @@ async function connectWallet() {
   console.log(count);
   console.log(provider);
   console.log(provider._network);
-  while (!provider._network || count > 5) {
+  while (!provider._network) {
     provider = new ethers.providers.Web3Provider(window.ethereum);
     await pause(1000);
-    count ++;
   }
   if (provider._network) {
+    count++;
+    console.log(count);
     await provider.send("eth_requestAccounts", []);
     count++;
     console.log(count);
@@ -2162,7 +2162,7 @@ async function onLoad() {
     };
   };
 }
-onLoad();
+//onLoad();
 
 
 // Conditional Text Formatting

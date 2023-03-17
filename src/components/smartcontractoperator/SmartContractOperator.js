@@ -1,3 +1,8 @@
+// To add:
+// 1. Default function for calling any contract that makes sure there will be no errors,
+//    waits for any missing information, and has error handling.
+//      -This will include confirming that providers._network is defined
+
 import React, { useState } from 'react'
 
 import { FormatTypes, Interface } from "@ethersproject/abi";

@@ -1918,7 +1918,6 @@ function handleConnectClick() {
 }
 
 async function connectWallet() {
-  console.log('A');
   var count = 0;
   count++;
   console.log(count);
@@ -2097,7 +2096,7 @@ async function onLoad() {
     };
   };
 }
-onLoad();
+//onLoad();
 
 
 var user_icon = false;
