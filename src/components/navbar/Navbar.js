@@ -1918,6 +1918,7 @@ function handleConnectClick() {
 }
 
 async function connectWallet() {
+  console.log('A');
   var count = 0;
   count++;
   console.log(count);
