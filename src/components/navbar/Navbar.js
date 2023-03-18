@@ -1955,43 +1955,43 @@ async function getUserMetadata() {
 
 async function updateUserStats() {
   const contract = new ethers.Contract(contractAddress, jsonAbi, provider);
-  user_tokenID = await contract.getUserTokenID(address);
-  user_primary_stats = await contract.getUserPrimaryStats(address);
-  user_stats_list = await contract.getUserCurrentStats(address);
-  user_element = capitalize(user_primary_stats[0]);
-  
-  user_stats['ID'] = parseInt(user_tokenID, 10);
-  user_stats['Element'] = user_element;
-  user_stats['Level'] = parseInt(user_stats_list[0], 10);
-  user_stats['EXP'] = parseInt(user_stats_list[1], 10);
-  user_stats['Image URI'] = user_primary_stats[3];
-  user_stats['Fire'] = parseInt(user_stats_list[2], 10);
-  user_stats['Water'] = parseInt(user_stats_list[3], 10);
-  user_stats['Air'] = parseInt(user_stats_list[4], 10);
-  user_stats['Earth'] = parseInt(user_stats_list[5], 10);
-  user_stats['Charisma'] = parseInt(user_stats_list[6], 10);
-  user_stats['Creativity'] = parseInt(user_stats_list[7], 10);
-  user_stats['Cunning'] = parseInt(user_stats_list[8], 10);
-  user_stats['Patience'] = parseInt(user_stats_list[9], 10);
+  if (address) {
+    user_tokenID = await contract.getUserTokenID(address);
+    user_primary_stats = await contract.getUserPrimaryStats(address);
+    user_stats_list = await contract.getUserCurrentStats(address);
+    user_element = capitalize(user_primary_stats[0]);
+    
+    user_stats['ID'] = parseInt(user_tokenID, 10);
+    user_stats['Element'] = user_element;
+    user_stats['Level'] = parseInt(user_stats_list[0], 10);
+    user_stats['EXP'] = parseInt(user_stats_list[1], 10);
+    user_stats['Image URI'] = user_primary_stats[3];
+    user_stats['Fire'] = parseInt(user_stats_list[2], 10);
+    user_stats['Water'] = parseInt(user_stats_list[3], 10);
+    user_stats['Air'] = parseInt(user_stats_list[4], 10);
+    user_stats['Earth'] = parseInt(user_stats_list[5], 10);
+    user_stats['Charisma'] = parseInt(user_stats_list[6], 10);
+    user_stats['Creativity'] = parseInt(user_stats_list[7], 10);
+    user_stats['Cunning'] = parseInt(user_stats_list[8], 10);
+    user_stats['Patience'] = parseInt(user_stats_list[9], 10);
 
 
-  // Recently added for user_icon
-  console.log(user_element, user_stats['Level'] % 2);
-  user_icon = icon_dict[user_element][(2 - (user_stats['Level'] % 2))];
-  console.log("User Icon: ", user_icon);
-  const walletButtonImage = document.getElementById('navbarWalletButtonImage');
-  walletButtonImage.src = user_icon;
-  walletButtonImage.style.width = '12.5%';
-  walletButtonImage.style.color = "var(--color-nfzorange)";
-  walletButtonImage.style.border = 'solid';
-  walletButtonImage.style.borderWidth = '5px 5px 5px 5px';
-  walletButtonImage.style.borderRadius = '10px';
-  document.getElementById('navbarWalletButtonText').textContent = '';
-  
-  
+    // Recently added for user_icon
+    console.log(user_element, user_stats['Level'] % 2);
+    user_icon = icon_dict[user_element][(2 - (user_stats['Level'] % 2))];
+    console.log("User Icon: ", user_icon);
+    const walletButtonImage = document.getElementById('navbarWalletButtonImage');
+    walletButtonImage.src = user_icon;
+    walletButtonImage.style.width = '12.5%';
+    walletButtonImage.style.color = "var(--color-nfzorange)";
+    walletButtonImage.style.border = 'solid';
+    walletButtonImage.style.borderWidth = '5px 5px 5px 5px';
+    walletButtonImage.style.borderRadius = '10px';
+    document.getElementById('navbarWalletButtonText').textContent = '';
 
-  console.log('User Stats: ', user_stats);
-  return user_stats;
+    console.log('User Stats: ', user_stats);
+    return user_stats;
+  }
 }
 
 

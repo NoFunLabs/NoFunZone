@@ -2014,41 +2014,28 @@ async function getUserMetadata() {
 
 async function updateUserStats() {
   const contract = new ethers.Contract(contractAddress, jsonAbi, provider);
-  user_tokenID = await contract.getUserTokenID(address);
-  user_primary_stats = await contract.getUserPrimaryStats(address);
-  user_stats_list = await contract.getUserCurrentStats(address);
-  
-  user_stats['ID'] = parseInt(user_tokenID, 10);
-  user_stats['Element'] = capitalize(user_primary_stats[0]);
-  user_stats['Level'] = parseInt(user_stats_list[0], 10);
-  user_stats['EXP'] = parseInt(user_stats_list[1], 10);
-  user_stats['Image URI'] = user_primary_stats[3];
-  user_stats['Fire'] = parseInt(user_stats_list[2], 10);
-  user_stats['Water'] = parseInt(user_stats_list[3], 10);
-  user_stats['Air'] = parseInt(user_stats_list[4], 10);
-  user_stats['Earth'] = parseInt(user_stats_list[5], 10);
-  user_stats['Charisma'] = parseInt(user_stats_list[6], 10);
-  user_stats['Creativity'] = parseInt(user_stats_list[7], 10);
-  user_stats['Cunning'] = parseInt(user_stats_list[8], 10);
-  user_stats['Patience'] = parseInt(user_stats_list[9], 10);
+  if (address) {
+    user_tokenID = await contract.getUserTokenID(address);
+    user_primary_stats = await contract.getUserPrimaryStats(address);
+    user_stats_list = await contract.getUserCurrentStats(address);
+    
+    user_stats['ID'] = parseInt(user_tokenID, 10);
+    user_stats['Element'] = capitalize(user_primary_stats[0]);
+    user_stats['Level'] = parseInt(user_stats_list[0], 10);
+    user_stats['EXP'] = parseInt(user_stats_list[1], 10);
+    user_stats['Image URI'] = user_primary_stats[3];
+    user_stats['Fire'] = parseInt(user_stats_list[2], 10);
+    user_stats['Water'] = parseInt(user_stats_list[3], 10);
+    user_stats['Air'] = parseInt(user_stats_list[4], 10);
+    user_stats['Earth'] = parseInt(user_stats_list[5], 10);
+    user_stats['Charisma'] = parseInt(user_stats_list[6], 10);
+    user_stats['Creativity'] = parseInt(user_stats_list[7], 10);
+    user_stats['Cunning'] = parseInt(user_stats_list[8], 10);
+    user_stats['Patience'] = parseInt(user_stats_list[9], 10);
 
-  
-  document.getElementById('IDText').textContent = 'ID: ' + user_stats['ID'];
-  document.getElementById('imageURIText').textContent = 'Image URI: ' + user_stats['Image URI'];
-  document.getElementById('levelText').textContent = 'Level: ' + user_stats['Level'];
-  document.getElementById('EXPText').textContent = 'EXP: ' + user_stats['EXP'];
-  document.getElementById('elementText').textContent = 'Element: ' + user_stats['Element'];
-  document.getElementById('fireText').textContent = 'Fire: ' + user_stats['Fire'];
-  document.getElementById('waterText').textContent = 'Water: ' + user_stats['Water'];
-  document.getElementById('airText').textContent = 'Air: ' + user_stats['Air'];
-  document.getElementById('earthText').textContent = 'Earth: ' + user_stats['Earth'];
-  document.getElementById('charismaText').textContent = 'Charisma: ' + user_stats['Charisma'];
-  document.getElementById('creativityText').textContent = 'Creativity: ' + user_stats['Creativity'];
-  document.getElementById('cunningText').textContent = 'Cunning: ' + user_stats['Cunning'];
-  document.getElementById('patienceText').textContent = 'Patience: ' + user_stats['Patience'];
-  
-  console.log('User Stats: ', user_stats);
-  return user_stats;
+    console.log('User Stats: ', user_stats);
+    return user_stats;
+  }
 }
 
 
@@ -2147,15 +2134,8 @@ function updateWalletButtons() {
   }
 }
 
-var onLoadExecuted = false;
-if (!onLoadExecuted) {
-  onLoadExecuted = true;
-  if (!isConnected) {
-    connectWallet();
-  };
-};
 
-
+// Recently added for user_icon
 var onLoadExecuted = false;
 if (!onLoadExecuted) {
   onLoadExecuted = true;
@@ -2165,9 +2145,6 @@ if (!onLoadExecuted) {
   };
 };
 
-
-// Conditional Text Formatting
-// <div id="avatarInfoOpenSeaLink" onClick={handleConnectClick}>{(isConnected) ? 'VIEW ON OPENSEA' : 'CONNECT WALLET'}</div>
 
 return (
   <div className='avatarInfo'>

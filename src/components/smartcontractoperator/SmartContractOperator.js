@@ -2,6 +2,8 @@
 // 1. Default function for calling any contract that makes sure there will be no errors,
 //    waits for any missing information, and has error handling.
 //      -This will include confirming that providers._network is defined
+// 2. Network switching - test with switch network button
+// 3. Optional automatic network switching to default_network
 
 import React, { useState } from 'react'
 
