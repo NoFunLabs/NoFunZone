@@ -91,7 +91,7 @@
   transform: scale(1.05);
 }
 
-.footerBox:active,
+.footerSocialsLink:active,
 .footerLogo:active,
 .footerColumnItem:active {
   -webkit-transform: scale(1.08);
