@@ -38,7 +38,7 @@ let run_on_load = false;
 
 // *Update the contract address list based on your smart contract
 const contract_address_dict = {'mainnet': '',
-                               'goerli': '0x6BAeBa3C272B35b19f7e5f97B11FfbbdB645C802',
+                               'goerli': '0x43Dd8B559066d5e2D86a87DAe643B8c109773538',
                                'hyperspace': '0xB4fECac2F5BdEc2eD15547cF857464c8691b9849'}
 
 // *Update JSON ABI list with your smart contract's latest JSON ABI
@@ -424,16 +424,6 @@ const json_ABI_list = {'mainnet': `[]`,
                         "outputs": [
                           {
                             "internalType": "uint16",
-                            "name": "currentLevel",
-                            "type": "uint16"
-                          },
-                          {
-                            "internalType": "uint256",
-                            "name": "exp",
-                            "type": "uint256"
-                          },
-                          {
-                            "internalType": "uint16",
                             "name": "fire",
                             "type": "uint16"
                           },
@@ -558,16 +548,6 @@ const json_ABI_list = {'mainnet': `[]`,
                         ],
                         "name": "getUserCurrentStats",
                         "outputs": [
-                          {
-                            "internalType": "uint16",
-                            "name": "currentLevel",
-                            "type": "uint16"
-                          },
-                          {
-                            "internalType": "uint256",
-                            "name": "exp",
-                            "type": "uint256"
-                          },
                           {
                             "internalType": "uint16",
                             "name": "fire",

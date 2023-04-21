@@ -166,17 +166,18 @@ async function updateUserStats() {
     
     user_stats['ID'] = parseInt(user_token_ID, 10);
     user_stats['Element'] = capitalize(user_primary_stats[0]);
+    user_stats['Level'] = parseInt(user_primary_stats[1], 10);
+    user_stats['EXP'] = parseInt(user_primary_stats[2], 10);
     user_stats['Metadata URI'] = capitalize(user_primary_stats[3]);
-    user_stats['Level'] = parseInt(user_stats_list[0], 10);
-    user_stats['EXP'] = parseInt(user_stats_list[1], 10);
-    user_stats['Fire'] = parseInt(user_stats_list[2], 10);
-    user_stats['Water'] = parseInt(user_stats_list[3], 10);
-    user_stats['Air'] = parseInt(user_stats_list[4], 10);
-    user_stats['Earth'] = parseInt(user_stats_list[5], 10);
-    user_stats['Charisma'] = parseInt(user_stats_list[6], 10);
-    user_stats['Creativity'] = parseInt(user_stats_list[7], 10);
-    user_stats['Cunning'] = parseInt(user_stats_list[8], 10);
-    user_stats['Patience'] = parseInt(user_stats_list[9], 10);
+    
+    user_stats['Fire'] = parseInt(user_stats_list[0], 10);
+    user_stats['Water'] = parseInt(user_stats_list[1], 10);
+    user_stats['Air'] = parseInt(user_stats_list[2], 10);
+    user_stats['Earth'] = parseInt(user_stats_list[3], 10);
+    user_stats['Charisma'] = parseInt(user_stats_list[4], 10);
+    user_stats['Creativity'] = parseInt(user_stats_list[5], 10);
+    user_stats['Cunning'] = parseInt(user_stats_list[6], 10);
+    user_stats['Patience'] = parseInt(user_stats_list[7], 10);
 
     document.getElementById('IDText').textContent = 'ID: ' + user_stats['ID'];
     document.getElementById('levelText').textContent = 'Level: ' + user_stats['Level'];
