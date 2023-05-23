@@ -1,0 +1,36 @@
+{
+    "attributes": [
+      {
+        "trait_type": "Edition",
+        "value": "1st Edition"
+      },
+      {
+        "trait_type": "Rarity",
+        "value": "Common"
+      },
+      {
+        "trait_type": "Element",
+        "value": "Water"
+      },
+      {
+        "trait_type": "Class of",
+        "value": "2023"
+      },
+      {
+        "trait_type": "Semester",
+        "value": "1st Semester"
+      },
+      {
+        "trait_type": "Sign",
+        "value": "Aries"
+      },
+      {
+        "trait_type": "Phase",
+        "value": "1"
+      }
+    ],
+    "description": "The No Fun Zone is your destination for learning about blockchain! Whether you're completely new to the technology, or a seasoned degen, you'll learn a ton as you play our free-to-play & play-to-earn games!",
+    "image": "https://gateway.pinata.cloud/ipfs/QmPF4nrDbTnGk2UWduZDw2FCHZcF6HJicYDdsDAkEqJgH7/LMNTLwater1.png",
+    "name": "LMNTL Guardian of Water"
+  }
+  
